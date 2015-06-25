@@ -1,0 +1,59 @@
+function [EigVal,EigVec] = Poincare( sim )
+% Calculates the Linearized Poincare eigenvalues
+% Version 0.1 - 10/05/2014
+
+% if sim.PMFull == 1
+%     Ncoord = sim.stDim;
+% else
+%     Ncoord = length(sim.ModCo);
+% end
+%Coords = 1:Ncoord;
+Ncoord = 4;
+Coords = [1 2 4 5];
+% Limit cycle initial conditions
+PMIC = sim.IClimCyc
+IC = repmat(PMIC, 1, Ncoord);
+
+% Disturbed initial conditions
+dIC = IC;
+dICp = IC;
+for d = Coords
+    dIC(d,d) = dIC(d,d) + sim.PMeps;
+end
+
+% Run the simulations
+PMSim = copy(sim);
+PMSim.EndCond = [1,sim.Period(1)];
+%Slope = PMSim.Env.SurfSlope(PMSim.Mod.xS);
+for d = Coords
+    PMSim.Graphics = 1;
+    PMSim.Mod = PMSim.Mod.Set('Phase','swing','LinearMotor','in');
+    %Sim.Mod = Sim.Mod.Set('Phase','swing','LinearMotor','out');
+
+    % Init controller:
+    PMSim.Con = PMSim.Con.Set('Period',1.3,'phi',[0.1 0.25 0.5 0.8],'tau',[0.8 -0.4]); 
+    PMSim.Con.Controller_Type = 'CPG';
+    PMSim.Con.IC = 1;%[1;0;Sim.Con.omega0;1;0;];
+    PMSim.Con.Init();
+    
+    PMSim.IC = dIC(:,d);
+    PMSim = PMSim.Init();
+%     PMSim.Con = PMSim.Con.Reset(PMSim.IC(PMSim.ConCo));
+%     PMSim.Con = PMSim.Con.HandleExtFB(PMSim.IC(PMSim.ModCo),...
+%         PMSim.IC(PMSim.ConCo),Slope);
+    PMSim = PMSim.Run();
+
+%     if PMSim.Out.Type ~= Sim.EndFlag_Converged
+%         % Robot didn't complete the step
+%         EigVal = 2*ones(Ncoord,1);
+%         EigVec = eye(Ncoord);
+%         return;
+%     end
+    dICp(:,d) = PMSim.ICstore(:,1);
+end
+
+% Calculate deviation
+DP = 1/sim.PMeps*(dICp(Coords,:) - IC(Coords,:));
+[EigVec,EigVal] = eig(DP,'nobalance');
+EigVal = diag(EigVal);
+end
