@@ -31,6 +31,8 @@ classdef SEASLController < handle & matlab.mixin.Copyable
         tau;
         phi;
         
+        SetKeys = {'Period','tau','phi'}
+        
     end
     
     methods

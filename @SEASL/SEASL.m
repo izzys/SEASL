@@ -60,6 +60,8 @@ classdef SEASL < handle & matlab.mixin.Copyable
         LineWidth=1;
         
         slope = 0;
+        
+        SetKeys = {''}
                      
     end
     

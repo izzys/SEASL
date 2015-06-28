@@ -1,5 +1,5 @@
 function [  ] = TestGA(  )
-clc;%clear all;close all;clear classes
+clc;clear all;close all;clear classes
 GA = MOOGA(20,1000);
 % GA.FileIn = 'TestGA_05_26_01_24.mat';
 GA.FileOut = ['TestGA_',datestr(now,'mm_dd_hh_MM'),'.mat'];
@@ -9,11 +9,11 @@ GA.Graphics = 0;
 
 % Set up the genome
 
-        % Pulses controller (only 1 pulse to hip)
-        Keys = {'T' ,    'phi'     ,'tau';...
-                 1,  [0 0.25 0.5 1],   [0.5,1]};
-        Range = {0.5, [0, 0, 0 , 0], [-10, 10]; % Min
-                   2, [1, 1,1 ,1]  , [-10, 10]}; % Max
+% CPG controller:
+Keys = {'T' ,    'phi'     ,'tau';...
+         1,  [0 0.25 0.5 1],   [0.5,1]};
+Range = {0.5, [0, 0, 0 , 0], [-10, 10]; % Min
+           2, [1, 1,1 ,1]  , [-10, 10]}; % Max
 
 GA.Gen = Genome(Keys, Range);
 
