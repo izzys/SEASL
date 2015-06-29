@@ -7,7 +7,7 @@ Genome.PopulationNum = 1000;
 Genome.KeepPercent = 10;
 Genome.MutationVariance = 0.2;
 Genome.CrossMutationRatio = 0.3;
-Genome.MinFit = 1;
+Genome.MinFit = 2;
 
 % this is the real values:
 Genome.A.actual = 5;
