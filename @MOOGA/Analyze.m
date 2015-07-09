@@ -84,7 +84,7 @@ Sim.Graphics = 0;
 if Sim.Graphics == 1
     Sim.Fig = figure();
 end
-Sim.PMFull = 1; % Run poincare map on all 5 coords
+% Sim.PMFull = 1; % Run poincare map on all 5 coords
 switch Type
     case 'OL'
         Sim.Con.FBType = 0;

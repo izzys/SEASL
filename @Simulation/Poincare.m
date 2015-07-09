@@ -2,13 +2,13 @@ function [EigVal,EigVec] = Poincare( sim )
 % Calculates the Linearized Poincare eigenvalues
 % Version 0.1 - 10/05/2014
 
-if sim.PMFull == 1
-    Ncoord = sim.stDim;
-else
-    Ncoord = length(sim.ModCo);
-end
-Ncoord = 4;
-Coords = [1 2 4 5];
+% if sim.PMFull == 1
+%     Ncoord = sim.stDim;
+% else
+%     Ncoord = length(sim.ModCo);
+% end
+Ncoord = 3;
+Coords = [1 2 4 ];
 
 % Limit cycle initial conditions
 IC = repmat(sim.IClimCyc(Coords), 1, Ncoord);
@@ -30,7 +30,7 @@ for d = 1:Ncoord
     %Sim.Mod = Sim.Mod.Set('Phase','swing','LinearMotor','out');
 
     % Init controller:
-    PMSim.Con = PMSim.Con.Set('Period',1.3,'phi',[0.1 0.25 0.5 0.8],'tau',[0.8 -0.4]); 
+    %PMSim.Con = PMSim.Con.Set('Period',1.3,'phi',[0.1 0.25 0.5 0.8],'tau',[0.8 -0.4]); 
     PMSim.Con.Controller_Type = 'CPG';
     PMSim.Con.IC = 0;
     PMSim.Con.Init();
@@ -43,12 +43,12 @@ for d = 1:Ncoord
 %         PMSim.IC(PMSim.ConCo),Slope);
     PMSim = PMSim.Run();
 
-%     if PMSim.Out.Type ~= Sim.EndFlag_Converged
-%         % Robot didn't complete the step
-%         EigVal = 2*ones(Ncoord,1);
-%         EigVec = eye(Ncoord);
-%         return;
-%     end
+    if PMSim.Out.Type ~= Sim.EndFlag_Converged
+        % Robot didn't complete the step
+        EigVal = 2*ones(Ncoord,1);
+        EigVec = eye(Ncoord);
+        return;
+    end
     dICp(:,d) = PMSim.ICstore(Coords,1);
 end
 

@@ -88,17 +88,17 @@ function [ Sim ] = Run( Sim )
             
         end
        
-        Sim.IC = Xa;
+        Sim.newIC = Xa;
         
         if StepDone
             Sim.ICstore(:,2:end) = Sim.ICstore(:,1:end-1);
-            Sim.ICstore(:,1) = Sim.IC';
+            Sim.ICstore(:,1) = Sim.newIC';
             Sim.StepsTaken = Sim.StepsTaken+1;
             if ~Sim.Graphics
             disp(['steps: ' num2str(Sim.StepsTaken)])
             end
             Sim = Sim.CheckConvergence();
-            Sim.Out.PoincareSection(:,Sim.StepsTaken) = Sim.IC';
+            Sim.Out.PoincareSection(:,Sim.StepsTaken) = Sim.newIC';
         end
         
         
@@ -122,7 +122,7 @@ function [ Sim ] = Run( Sim )
             break;
         end
         [TTemp,XTemp,TE,YE,IE] = ...
-            ode45(@Sim.Derivative,tspan,Sim.IC,options); 
+            ode45(@Sim.Derivative,tspan,Sim.newIC,options); 
         
         if Sim.infTime == 1
             TimeCond = true;
@@ -143,7 +143,7 @@ function [ Sim ] = Run( Sim )
         set(Sim.StopButtonObj,'String','Close Window');
         Sim.Out.Type = Sim.EndFlag_TimeEndedBeforeConverge;
         Sim.Out.Text = 'Reached end of tspan before system converged.';
-        Sim.IClimCyc = Sim.IC';
+        Sim.IClimCyc = Sim.newIC';
         Sim.Period = [1, Inf];   
     end
     

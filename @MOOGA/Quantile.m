@@ -79,7 +79,7 @@ switch Method
         qData = Data;
         qData(IDs,:) = [];
     case 3
-        DesOut = DesQ*size(Data,1);
+        DesOut = floor(DesQ*size(Data,1));
             
         % Check number of values above zero
         zData = Data>0;

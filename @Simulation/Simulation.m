@@ -45,13 +45,14 @@ classdef Simulation < handle & matlab.mixin.Copyable
         StepsTaken;
         EventsCounter = 0; 
         ICstore; nICsStored = 10;
-        minDiff = 1e-9; % Min. difference for LC convergence
-        stepsReq = 10; % Steps of minDiff required for convergence
+        minDiff = 1e-7; % Min. difference for LC convergence
+        stepsReq = 5; % Steps of minDiff required for convergence
         stepsSS; % Steps taken since minDiff
+        newIC;
         
         % Poincare map calculation parameters
         IClimCyc; Period;
-        PMeps = 1e-7; PMFull = 1;
+        PMeps = 1e-6; PMFull = 0;
         PMeigs; PMeigVs;
         % Check convergence progression
         doGoNoGo = 1; % 0 - OFF, 1 - Extend, 2 - Cut
@@ -279,11 +280,12 @@ classdef Simulation < handle & matlab.mixin.Copyable
         function [] = RecordEvents(Sim,TE,YE,IE)
             
            Sim.EventsCounter = Sim.EventsCounter+1;
-
+           
+           if ~isempty(IE)
            Sim.Out.EventsVec.Type{Sim.EventsCounter} = IE(end);
            Sim.Out.EventsVec.Time{Sim.EventsCounter} = TE(end);
            Sim.Out.EventsVec.State{Sim.EventsCounter} = YE(end,:);
-
+           end
         end
         
         function [] = CheckForErrors(Sim,t,X)

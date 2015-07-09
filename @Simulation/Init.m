@@ -15,6 +15,8 @@ function [ Sim ] = Init( Sim )
         error('Error: contradicting starting position. Cannot be in start phase: stance, and linear motor: in')
     end
     
+
+   
     % check here if IC are ok !! 
     [ ~, y_hip ] = GetPos(Sim.Mod, Sim.Mod.IC, 'hip');
     if y_hip<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
@@ -48,6 +50,7 @@ function [ Sim ] = Init( Sim )
     end
     
     Sim.IC = [Sim.Mod.IC ; Sim.Con.IC];
+    Sim.newIC=[];
     Sim.StopSim = 0;
     Sim.PauseSim = 0; 
     

@@ -8,9 +8,9 @@ if GA.Sim.Graphics == 1
     GA.Sim.Fig = figure();
 end
 
-if isempty(gcp('nocreate'))
-    parpool(7) % Work in parallel to finish faster
-end
+% if isempty(gcp('nocreate'))
+%     parpool(4) % Work in parallel to finish faster
+% end
 
 % Decode base genome if provided
 if ~isempty(GA.BaseSeq)
@@ -52,8 +52,8 @@ for g = GA.Progress+1:GA.Generations
     gSeqs = GA.Seqs(:,:,g);
     gFit = GA.Fit(:,:,g);
     
-    parfor i = 1:GA.Population
-%     for i = 1:GA.Population
+   % parfor i = 1:GA.Population
+     for i = 1:GA.Population
         if any(gFit(i,:)~=0)
             continue;
         end
@@ -62,11 +62,13 @@ for g = GA.Progress+1:GA.Generations
         wSim = deepcopy(Sim);
         wSim = Gen.Decode(wSim,gSeqs(i,:)); %#ok<PFBNS>
         wSim = wSim.Init();
-        wSim.Con = wSim.Con.HandleEvent(1, wSim.IC(wSim.ConCo));
-        
+      
         % Run the simulation
+        try
         wSim = wSim.Run();
-        
+        catch error
+            err =error
+        end
         % Calculate the genome's fitness
         thisFit = zeros(1,max(cell2mat(FitInd')));
         thisOuts = cell(1,NFit);

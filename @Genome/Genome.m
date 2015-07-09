@@ -29,9 +29,9 @@ classdef Genome
             % KeyLengths can be set here or from the outside
             % They are used to define the number of genes for a
             % specific key
-            Ge.KeyLength.Pulses = 3;
-            Ge.KeyLength.ExtPulses = 2;
-            Ge.KeyLength.CPG = 2;            
+            Ge.KeyLength.T = 1; 
+            Ge.KeyLength.phi = 4; 
+            Ge.KeyLength.tau = 2; 
             % KeyExtras can be set here or from the outside
             % They are used to provide extra information about
             % how to decode a key, e.g. where to put every
