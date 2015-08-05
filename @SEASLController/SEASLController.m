@@ -46,7 +46,6 @@ classdef SEASLController < handle & matlab.mixin.Copyable
 
                 
               case 'CPG'
-                  
                 NC.nEvents = 1+length(NC.phi);
                 NC.omega0 = 1/NC.Period;
               otherwise

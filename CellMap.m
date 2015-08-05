@@ -1,10 +1,10 @@
-function CM = CellMap(x_range,y_range,z_range,map_fun)
+function CM = CellMap(Sim,x_range,y_range,z_range,map_fun)
 nX = length(x_range);
 nY = length(y_range);
 nZ = length(z_range);
 CM = -1*ones(nX-1,nY-1,nZ-1);
 %%
-ind0 = GetCell([0;0;0],x_range,y_range,z_range);
+ind0 = GetCell([Sim.IClimCyc(1);Sim.IClimCyc(2);Sim.IClimCyc(4)],x_range,y_range,z_range);
 CM(ind0(1),ind0(2),ind0(3)) = 1;
 % -1 - not assigned 
 % 1 - converge

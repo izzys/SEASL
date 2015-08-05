@@ -291,7 +291,7 @@ classdef SEASL < handle & matlab.mixin.Copyable
             % Event #3 - max height to open leg:
              if strcmp(Mod.Phase,'swing')
 
-                value(3) = X(2)-0.1;
+                value(3) = X(2);
                 isterminal(3) = 1;
                 direction(3) = -1;                                 
             end            

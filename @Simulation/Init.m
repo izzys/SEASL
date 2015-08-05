@@ -10,10 +10,9 @@ function [ Sim ] = Init( Sim )
     Sim.ModEv = 1:Sim.Mod.nEvents; % Model events indices
     Sim.ConEv = Sim.Mod.nEvents+1:Sim.nEvents; % Contr. events indices
     
-<<<<<<< HEAD
     
     % Set linear motor - in/out:
-    if Sim.Mod.IC(2)<=0 && Sim.Mod.IC(1)>0
+    if Sim.Mod.IC(2)<=0 && Sim.Mod.IC(1)>0 
         Sim.Mod.LinearMotor = 'out';
     end
     if Sim.Mod.IC(2)>0 && Sim.Mod.IC(1)>=0
@@ -22,18 +21,14 @@ function [ Sim ] = Init( Sim )
 
     
     % Check Sim IC:
-=======
-    % check Sim IC:
->>>>>>> origin/Simulation
+
     if strcmp(Sim.Mod.Phase,'stance') && strcmp(Sim.Mod.LinearMotor,'in') 
         error('Error: contradicting starting position. Cannot be in start phase: stance, and linear motor: in')
     end
     
-<<<<<<< HEAD
-    % Check here if IC are ok !! 
-=======
+
     % check here if IC are ok !! 
->>>>>>> origin/Simulation
+
     [ ~, y_hip ] = GetPos(Sim.Mod, Sim.Mod.IC, 'hip');
     if y_hip<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
         error('Error: wrong IC , hip too low')
@@ -42,13 +37,9 @@ function [ Sim ] = Init( Sim )
     if y_ankle<Sim.Mod.ankle_radius
         error('Error: wrong IC , foot penetrates ground')
     end    
-    
-    
-<<<<<<< HEAD
-    % Init model:
-=======
+
     % init model:
->>>>>>> origin/Simulation
+
     if strcmp(Sim.Mod.LinearMotor , 'out')
     	Sim.Mod.leg_length = Sim.Mod.Leg_params.stance_length;
     elseif strcmp(Sim.Mod.LinearMotor , 'in')
@@ -105,8 +96,11 @@ function [ Sim ] = Init( Sim )
     Sim.Mod.Hip_Torque = 0;
     Sim.Mod.Ankle_Torque = 0; 
     
-    % init stats:
+    % counters:
+    Sim.stance_counter = 0;
     Sim.StepsTaken = 0;
+    
+    % init stats:
     Sim.ICstore = zeros(Sim.stDim, Sim.nICsStored);
     Sim.stepsSS = zeros(1,Sim.nICsStored-1);
     

@@ -3,6 +3,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
     properties(Constant)
 
         % End flags:
+        EndFlag_MoreThanOneStance = -8;
         EndFlag_HipHitTrack = -7;
         EndFlag_NoSignChange = -6;
         EndFlag_MaxLegAngle = -5;
@@ -49,6 +50,10 @@ classdef Simulation < handle & matlab.mixin.Copyable
 
         stepsReq = 10; % Steps of minDiff required for convergence
         stepsSS; % Steps taken since minDiff
+        
+        
+        %check 1 stance phase for each period:
+        stance_counter=0;
         
         % Poincare map calculation parameters
         IClimCyc; Period;

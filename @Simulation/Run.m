@@ -42,6 +42,17 @@ function [ Sim ] = Run( Sim )
                     Sim.Con.HandleExtEvent(ModEvID, XTemp(end,:),TTemp(end));
                 
                 
+                %check only 1 stance phase for each period
+                if ModEvID ==1
+                    Sim.stance_counter = Sim.stance_counter+1;
+                    
+                    if Sim.stance_counter>1
+                        Sim.Out.Type = Sim.EndFlag_MoreThanOneStance;
+                        Sim.Out.Text = 'More than 1 stance phase for period';
+                        Sim.StopSim = 1;
+                    end
+                end
+                
             end
 
             % Is it a controller event?
@@ -53,21 +64,22 @@ function [ Sim ] = Run( Sim )
                               
                 if ConEvID==1
                     StepDone = 1;
-                    % check change in sign at stance phase:
-                    ind_impact = find(cell2mat(Sim.Out.EventsVec.Type)==1,1,'last');
-                   
-                    if ~isempty(ind_impact)
-                    theta_at_impact = Sim.Out.EventsVec.State{ind_impact}(1);
-                    theta_at_end_phse = Xa(1);
+                    
+                        % check change in sign at stance phase:
+                        ind_impact = find(cell2mat(Sim.Out.EventsVec.Type)==1,1,'last');
 
-                    sign_change = sign(theta_at_impact*theta_at_end_phse);
-                        if sign_change>0  %no sign change:
-                             Sim.Out.Type = Sim.EndFlag_NoSignChange;
-                             Sim.Out.Text = 'No sign change in stance phase';
-                             Sim.StopSim = 1;
+                        if ~isempty(ind_impact)
+                        theta_at_impact = Sim.Out.EventsVec.State{ind_impact}(1);
+                        theta_at_end_phse = Xa(1);
+
+                        sign_change = sign(theta_at_impact*theta_at_end_phse);
+                            if sign_change>0  %no sign change:
+                                 Sim.Out.Type = Sim.EndFlag_NoSignChange;
+                                 Sim.Out.Text = 'No sign change in stance phase';
+                                 Sim.StopSim = 1;
+                            end
+
                         end
-
-                    end
                 
                 end
                 
@@ -99,6 +111,7 @@ function [ Sim ] = Run( Sim )
             end
             Sim = Sim.CheckConvergence();
             Sim.Out.PoincareSection(:,Sim.StepsTaken) = Sim.IC';
+            Sim.stance_counter = 0;
         end
         
         

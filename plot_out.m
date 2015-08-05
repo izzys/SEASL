@@ -1,4 +1,4 @@
-% plot out:
+function []= plot_out(Sim)
 
 theta = Sim.Out.X(:,1);
 dtheta = Sim.Out.X(:,2);
