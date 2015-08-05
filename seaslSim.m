@@ -18,7 +18,7 @@ Sim.Con.IC = 0;%[1;0;Sim.Con.omega0;1;0;];
 Sim.Con.Init();
 
 % Simulate:
-Sim.Mod.IC = [ -0.3588  -2.4  0   3.3]'; %for reflex at extend
+Sim.Mod.IC = [-0.454644171863700 , -2.585322871436600  , 0 , 3.677134034074900 ]'; %for reflex at extend
 
 Sim = Sim.Init();
 

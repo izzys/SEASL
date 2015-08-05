@@ -15,10 +15,12 @@ function [ Sim ] = Init( Sim )
     if Sim.Mod.IC(2)<=0 && Sim.Mod.IC(1)>0
         Sim.Mod.LinearMotor = 'out';
     end
-    if Sim.Mod.IC(2)>0 && Sim.Mod.IC(1)>=0
+    if Sim.Mod.IC(2)>0 && Sim.Mod.IC(1)>0
         Sim.Mod.LinearMotor = 'in';
     end
-
+    if Sim.Mod.IC(2)>0 && Sim.Mod.IC(1)>0
+        Sim.Mod.LinearMotor = 'in';
+    end   
     
     % Check Sim IC:
     if strcmp(Sim.Mod.Phase,'stance') && strcmp(Sim.Mod.LinearMotor,'in') 
