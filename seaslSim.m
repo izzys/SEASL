@@ -13,7 +13,7 @@ Sim.Mod = Sim.Mod.Set('Phase','swing','LinearMotor','in');
 
 % Init controller:
 
-Sim.Con = Sim.Con.Set('Period',1.2,'phi',[0.1 0.25 0.4 0.99],'tau',[0.7 -0.9]); 
+Sim.Con = Sim.Con.Set('Period',1.2,'phi',[0.1 0.25 0.4 0.99],'tau',[2 -0.9]); 
 
 Sim.Con.Controller_Type = 'CPG';
 Sim.Con.IC = 0;%[1;0;Sim.Con.omega0;1;0;];
