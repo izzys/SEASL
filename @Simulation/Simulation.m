@@ -46,6 +46,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
         EventsCounter = 0; 
         ICstore; nICsStored = 10;
         minDiff = 1e-8; % Min. difference for LC convergence
+
         stepsReq = 10; % Steps of minDiff required for convergence
         stepsSS; % Steps taken since minDiff
         

@@ -27,11 +27,8 @@ PMSim.EndCond = [1,sim.Period(1)];
 for d = 1:Ncoord
     PMSim.Graphics = 0;
     PMSim.Mod = PMSim.Mod.Set('Phase','swing','LinearMotor','in');
-    %Sim.Mod = Sim.Mod.Set('Phase','swing','LinearMotor','out');
 
     % Init controller:
-    PMSim.Con = PMSim.Con.Set('Period',1.3,'phi',[0.1 0.25 0.5 0.8],'tau',[0.8 -0.4]); 
-    PMSim.Con.Controller_Type = 'CPG';
     PMSim.Con.IC = 0;
     PMSim.Con.Init();
     

@@ -18,7 +18,9 @@ Sim.Con.IC = 0;%[1;0;Sim.Con.omega0;1;0;];
 Sim.Con.Init();
 
 % Simulate:
-Sim.Mod.IC = [-0.454644171863700 , -2.585322871436600  , 0 , 3.677134034074900 ]'; %for reflex at extend
+
+Sim.Mod.IC = 1.0e+02 *[ -0.004546441718706 -0.025853228714697  0   0.036771340341327]'; %for reflex at extend
+
 
 Sim = Sim.Init();
 
@@ -30,7 +32,7 @@ Sim = Sim.Run();
 if Sim.Out.Type == Sim.EndFlag_Converged
 Sim.PMeps = 1e-7;
 [EigVal,EigVec] = Sim.Poincare();
-EigVal
+e = EigVal
 end
 
 plot_out;
