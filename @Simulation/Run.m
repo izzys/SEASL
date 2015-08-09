@@ -11,6 +11,7 @@ function [ Sim ] = Run( Sim )
 
     [TTemp,XTemp,TE,YE,IE] = ...
         ode45(@Sim.Derivative,tspan,Sim.IC,options); 
+
     
     if Sim.infTime == 1
         TimeCond = true;
@@ -22,10 +23,11 @@ function [ Sim ] = Run( Sim )
     % Save state and time
     X = [X; XTemp];
     Sim.Out.T = [Sim.Out.T; TTemp];
-
+    Sim.RecordEvents(TE,YE,IE);
+    
     while TimeCond && Sim.StopSim == 0
 
-        Sim.RecordEvents(TE,YE,IE);
+        
         StepDone = 0;
         Xa = XTemp(end,:);
         for ev = 1:length(IE)
@@ -41,6 +43,37 @@ function [ Sim ] = Run( Sim )
                 [Sim.Con,Xa(Sim.ConCo)] =  ...
                     Sim.Con.HandleExtEvent(ModEvID, XTemp(end,:),TTemp(end));
                 
+                     
+                switch ModEvID 
+                    
+                    case 1 %check only 1 stance phase for each period
+                        Sim.stance_counter = Sim.stance_counter+1;
+
+                        if Sim.stance_counter>1
+                            Sim.Out.Type = Sim.EndFlag_MoreThanOneStance;
+                            Sim.Out.Text = 'More than 1 stance phase for period';
+                            Sim.StopSim = 1;
+                        end
+
+                    case 2  %check that leg hits track only if theta>0 
+                        
+                        if Xa(1)>0
+                            Sim.Out.Type = Sim.EndFlag_NoSignChange;
+                            Sim.Out.Text = 'Leg hits track when theta>0';
+                            Sim.StopSim = 1;
+                        end
+
+                    case 3 % check that foot does not extend into ground
+                        
+                        [ ~, y_ankle ] = Sim.Mod.GetPos(Xa, 'ankle');
+                        if (y_ankle+1e-8)<Sim.Mod.ankle_radius
+                            Sim.Out.Type = Sim.EndFlag_LegHitsGroundDuringExtend;
+                            Sim.Out.Text =' foot penetrates ground during extend';
+                            Sim.StopSim = 1;
+                        end
+                end
+               
+               
                 
             end
 
@@ -53,21 +86,22 @@ function [ Sim ] = Run( Sim )
                               
                 if ConEvID==1
                     StepDone = 1;
-                    % check change in sign at stance phase:
-                    ind_impact = find(cell2mat(Sim.Out.EventsVec.Type)==1,1,'last');
-                   
-                    if ~isempty(ind_impact)
-                    theta_at_impact = Sim.Out.EventsVec.State{ind_impact}(1);
-                    theta_at_end_phse = Xa(1);
-
-                    sign_change = sign(theta_at_impact*theta_at_end_phse);
-                        if sign_change>0  %no sign change:
-                             Sim.Out.Type = Sim.EndFlag_NoSignChange;
-                             Sim.Out.Text = 'No sign change in stance phase';
-                             Sim.StopSim = 1;
-                        end
-
-                    end
+                    
+%                         % check change in sign at stance phase:
+%                         ind_impact = find(cell2mat(Sim.Out.EventsVec.Type)==1,1,'last');
+% 
+%                         if ~isempty(ind_impact)
+%                         theta_at_impact = Sim.Out.EventsVec.State{ind_impact}(1);
+%                         theta_at_end_phse = Xa(1);
+% 
+%                         sign_change = sign(theta_at_impact*theta_at_end_phse);
+%                             if sign_change>0  %no sign change:
+%                                  Sim.Out.Type = Sim.EndFlag_NoSignChange;
+%                                  Sim.Out.Text = 'No sign change in stance phase';
+%                                  Sim.StopSim = 1;
+%                             end
+% 
+%                         end
                 
                 end
                 
@@ -94,11 +128,12 @@ function [ Sim ] = Run( Sim )
             Sim.ICstore(:,2:end) = Sim.ICstore(:,1:end-1);
             Sim.ICstore(:,1) = Sim.IC';
             Sim.StepsTaken = Sim.StepsTaken+1;
-            if ~Sim.Graphics
-            disp(['steps: ' num2str(Sim.StepsTaken)])
-            end
+%             if ~Sim.Graphics
+%             disp(['steps: ' num2str(Sim.StepsTaken)])
+%             end
             Sim = Sim.CheckConvergence();
             Sim.Out.PoincareSection(:,Sim.StepsTaken) = Sim.IC';
+            Sim.stance_counter = 0;
         end
         
         
@@ -134,7 +169,7 @@ function [ Sim ] = Run( Sim )
         % Save state and time
         X = [X; XTemp]; %#ok<AGROW>
         Sim.Out.T = [Sim.Out.T; TTemp];
-
+        Sim.RecordEvents(TE,YE,IE);
     end
     
     %for not stable IC:

@@ -3,6 +3,8 @@ classdef Simulation < handle & matlab.mixin.Copyable
     properties(Constant)
 
         % End flags:
+        EndFlag_LegHitsGroundDuringExtend = -9;
+        EndFlag_MoreThanOneStance = -8;
         EndFlag_HipHitTrack = -7;
         EndFlag_NoSignChange = -6;
         EndFlag_MaxLegAngle = -5;
@@ -45,13 +47,18 @@ classdef Simulation < handle & matlab.mixin.Copyable
         StepsTaken;
         EventsCounter = 0; 
         ICstore; nICsStored = 10;
-        minDiff = 1e-9; % Min. difference for LC convergence
+        minDiff = 1e-8; % Min. difference for LC convergence
+
         stepsReq = 10; % Steps of minDiff required for convergence
         stepsSS; % Steps taken since minDiff
         
+        
+        %check 1 stance phase for each period:
+        stance_counter=0;
+        
         % Poincare map calculation parameters
         IClimCyc; Period;
-        PMeps = 1e-7; PMFull = 1;
+        PMeps = 5e-7; PMFull = 1;
         PMeigs; PMeigVs;
         % Check convergence progression
         doGoNoGo = 1; % 0 - OFF, 1 - Extend, 2 - Cut
@@ -278,11 +285,15 @@ classdef Simulation < handle & matlab.mixin.Copyable
         
         function [] = RecordEvents(Sim,TE,YE,IE)
             
-           Sim.EventsCounter = Sim.EventsCounter+1;
+           if ~isempty(IE)
+            
+               Sim.EventsCounter = Sim.EventsCounter+1;
 
-           Sim.Out.EventsVec.Type{Sim.EventsCounter} = IE(end);
-           Sim.Out.EventsVec.Time{Sim.EventsCounter} = TE(end);
-           Sim.Out.EventsVec.State{Sim.EventsCounter} = YE(end,:);
+               Sim.Out.EventsVec.Type{Sim.EventsCounter} = IE(end);
+               Sim.Out.EventsVec.Time{Sim.EventsCounter} = TE(end);
+               Sim.Out.EventsVec.State{Sim.EventsCounter} = YE(end,:);
+           
+           end
 
         end
         

@@ -10,22 +10,41 @@ function [ Sim ] = Init( Sim )
     Sim.ModEv = 1:Sim.Mod.nEvents; % Model events indices
     Sim.ConEv = Sim.Mod.nEvents+1:Sim.nEvents; % Contr. events indices
     
-    % check Sim IC:
+    
+    % Set linear motor - in/out:
+    if Sim.Mod.IC(2)<=0 && Sim.Mod.IC(1)>0 
+        Sim.Mod.LinearMotor = 'out';
+    end
+    if Sim.Mod.IC(2)>0 && Sim.Mod.IC(1)>=0
+        Sim.Mod.LinearMotor = 'in';
+    end
+
+    
+    % Check Sim IC:
     if strcmp(Sim.Mod.Phase,'stance') && strcmp(Sim.Mod.LinearMotor,'in') 
         error('Error: contradicting starting position. Cannot be in start phase: stance, and linear motor: in')
     end
     
+
     % check here if IC are ok !! 
     [ ~, y_hip ] = GetPos(Sim.Mod, Sim.Mod.IC, 'hip');
     if y_hip<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
-        error('Error: wrong IC , hip too low')
+        if strcmp(Sim.Mod.Phase ,'stance')
+            Sim.Mod.Phase = 'swing';
+        else
+            error('Error: wrong IC , hip too low')
+        end
+        
     end
     [ ~, y_ankle ] = GetPos(Sim.Mod, Sim.Mod.IC, 'ankle');
     if y_ankle<Sim.Mod.ankle_radius
-        error('Error: wrong IC , foot penetrates ground')
+          if strcmp(Sim.Mod.Phase ,'swing')
+             Sim.Mod.Phase = 'stance';
+          else
+             error('Error: wrong IC , foot penetrates ground')
+          end
     end    
-    
-    
+
     % init model:
     if strcmp(Sim.Mod.LinearMotor , 'out')
     	Sim.Mod.leg_length = Sim.Mod.Leg_params.stance_length;
@@ -43,9 +62,9 @@ function [ Sim ] = Init( Sim )
         Sim.Mod.x0 = x_cart+l*sin(theta);
     end
     
-    if strcmp(Sim.Con.Controller_Type,'Hopf_adaptive') && Sim.Con.NumOfNeurons>1
-        Sim.Con.IC = repmat(Sim.Con.IC,Sim.Con.NumOfNeurons,1);
-    end
+%     if strcmp(Sim.Con.Controller_Type,'Hopf_adaptive') && Sim.Con.NumOfNeurons>1
+%         Sim.Con.IC = repmat(Sim.Con.IC,Sim.Con.NumOfNeurons,1);
+%     end
     
     Sim.IC = [Sim.Mod.IC ; Sim.Con.IC];
     Sim.StopSim = 0;
@@ -83,8 +102,14 @@ function [ Sim ] = Init( Sim )
     Sim.Mod.Hip_Torque = 0;
     Sim.Mod.Ankle_Torque = 0; 
     
-    % init stats:
+    % if shorten is by reflex - then dont short at end of period:
+    Sim.Con.ShortenAtPeriod =  ~Sim.Mod.ShortenReflexOn ;
+    
+    % counters:
+    Sim.stance_counter = 0;
     Sim.StepsTaken = 0;
+    
+    % init stats:
     Sim.ICstore = zeros(Sim.stDim, Sim.nICsStored);
     Sim.stepsSS = zeros(1,Sim.nICsStored-1);
     
@@ -98,5 +123,6 @@ function [ Sim ] = Init( Sim )
     Sim.Out.ZMPtime_stamp = [];
     Sim.Out.ZMPval1 = [];
     Sim.Out.ZMPval2 = [];
+    Sim.Out.EventsVec = [];
 end
 
