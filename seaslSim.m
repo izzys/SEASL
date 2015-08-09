@@ -5,10 +5,12 @@ Sim = Simulation();
 Sim.Graphics = 1;
 %1: number of steps, 2: covergance
 Sim.EndCond = 2;
-Sim = Sim.SetTime(0,0.02,100);
+Sim = Sim.SetTime(0,0.005,100);
 
 % Set up the model:
 Sim.Mod = Sim.Mod.Set('Phase','swing','LinearMotor','in');
+Sim.Mod.ShortenReflexOn = 1;
+Sim.Mod.ExtendReflexOn = 1;
 %Sim.Mod = Sim.Mod.Set('Phase','swing','LinearMotor','out');
 
 % Init controller:
@@ -20,10 +22,19 @@ Sim.Con.IC = 0;%[1;0;Sim.Con.omega0;1;0;];
 Sim.Con.Init();
 
 % Simulate:
+%Sim.Mod.IC = 1.0e+02 *[ -0.004546441718706 -0.025853228714697  0   0.036771340341327]'; % LC
 
-%Sim.Mod.IC = [ -0.601243027678524   1.232622029427107  0   3.205736429418639]'; %for reflex at extend and short
-Sim.Mod.IC = [ -0.3588  -2.4  0   3.3]'; %for reflex at extend
+Sim.Mod.IC =   [  
+    
 
+  -0.246002084097265
+   2.818514872863106
+   0
+   2.433263020964829
+
+
+
+];
 
 Sim = Sim.Init();
 
@@ -35,7 +46,7 @@ Sim = Sim.Run();
 if Sim.Out.Type == Sim.EndFlag_Converged
 Sim.PMeps = 1e-7;
 [EigVal,EigVec] = Sim.Poincare();
-e = EigVal
+EigVal
 end
 
-plot_out;
+plot_out(Sim);
