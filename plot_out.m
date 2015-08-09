@@ -16,7 +16,8 @@ zmp1 = Sim.Out.ZMPval1;
 zmp2 = Sim.Out.ZMPval2;
 zmp_time = Sim.Out.ZMPtime_stamp;
 
-
+if ~isempty(Sim.Out.EventsVec)
+    
 EventsTime = cell2mat(Sim.Out.EventsVec.Time);
 EventsX = cell2mat(Sim.Out.EventsVec.State);
 EventsX = vec2mat(EventsX,Sim.stDim);
@@ -140,3 +141,5 @@ color = [rand(1) rand(1) rand(1)];
 plot(theta,dtheta,'color',color)
 xlabel('\theta')
 ylabel('d\theta')
+
+end

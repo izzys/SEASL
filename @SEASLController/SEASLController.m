@@ -12,6 +12,9 @@ classdef SEASLController < handle & matlab.mixin.Copyable
         Linear_motor_in = 0;
         Linear_motor_out = 0;
         
+        % flag to shorten leg at end of period:
+        ShortenAtPeriod;
+        
         % Controller type:
         Controller_Type; 
         
@@ -117,7 +120,9 @@ classdef SEASLController < handle & matlab.mixin.Copyable
                 case 1 % end of periof
                   
                     Xafter = 0;
-                    NC.Linear_motor_in = 1;
+                        if NC.ShortenAtPeriod
+                             NC.Linear_motor_in = 1;
+                        end
                     NC.u = 0;
              
                 case 2  %phi1

@@ -9,6 +9,13 @@ CM(ind0(1),ind0(2),ind0(3)) = 1;
 % -1 - not assigned 
 % 1 - converge
 % 0 - diverge
+
+    date_and_hour = datestr(now);
+    Hour = hour(date_and_hour);
+    Minute = minute(date_and_hour);
+    Seconds = second(date_and_hour);
+    
+    
 for i = 1:length(CM(:))
     
     if CM(i) ~= -1
@@ -17,13 +24,13 @@ for i = 1:length(CM(:))
         ind = [i];
         stop = 0;
         [xx,yy,zz] = ind2sub(size(CM),ind(end));
-        ic = PointFromCell([xx,yy,zz],x_range,y_range,z_range)';
+        ic = PointFromCell([xx,yy,zz],x_range,y_range,z_range)'
         while ~stop
-            ic = map_fun(ic);
+            ic = map_fun(ic)
             cur_cell = GetCell(ic,x_range,y_range,z_range);
                 if ~isnan(cur_cell)
                     cur_ind = sub2ind(size(CM),cur_cell(1),cur_cell(2),cur_cell(3));
-                    ind = [ind,cur_ind]; 
+                    ind = [ind,cur_ind]
                     if CM(cur_ind) ~= -1
                         CM(ind) = CM(cur_ind);
                         stop = 1;
@@ -39,7 +46,11 @@ for i = 1:length(CM(:))
                 
         end
         disp([num2str(sum(CM(:)~=-1)),' out of ',num2str((nX-1)*(nY-1)*(nZ-1))]);
+    
 
+    save(['CM__' datestr(now,'dd-mmm-yyyy') '_'  num2str(Hour) '_' num2str(Minute) '_' num2str(Seconds) ],'CM')
+
+        
     end
         
 end

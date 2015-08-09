@@ -3,6 +3,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
     properties(Constant)
 
         % End flags:
+        EndFlag_LegHitsGroundDuringExtend = -9;
         EndFlag_MoreThanOneStance = -8;
         EndFlag_HipHitTrack = -7;
         EndFlag_NoSignChange = -6;
@@ -284,11 +285,15 @@ classdef Simulation < handle & matlab.mixin.Copyable
         
         function [] = RecordEvents(Sim,TE,YE,IE)
             
-           Sim.EventsCounter = Sim.EventsCounter+1;
+           if ~isempty(IE)
+            
+               Sim.EventsCounter = Sim.EventsCounter+1;
 
-           Sim.Out.EventsVec.Type{Sim.EventsCounter} = IE(end);
-           Sim.Out.EventsVec.Time{Sim.EventsCounter} = TE(end);
-           Sim.Out.EventsVec.State{Sim.EventsCounter} = YE(end,:);
+               Sim.Out.EventsVec.Type{Sim.EventsCounter} = IE(end);
+               Sim.Out.EventsVec.Time{Sim.EventsCounter} = TE(end);
+               Sim.Out.EventsVec.State{Sim.EventsCounter} = YE(end,:);
+           
+           end
 
         end
         
