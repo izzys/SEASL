@@ -236,7 +236,6 @@ classdef SEASL < handle & matlab.mixin.Copyable
                     G4 = (c_hip+c_ankle+c_floor*l^2*cos(theta)^2+c_track*l^2*sin(theta)^2)*dtheta;
                     tau = T_hip+T_ankle;
                     
-
                     dq(1) = q(2);
                     dq(2) = 1/M*(G1-G2+G3-G4+tau);
                     
@@ -244,7 +243,6 @@ classdef SEASL < handle & matlab.mixin.Copyable
                     dq(4) = l*sin(theta)*dtheta^2-l*cos(theta)*dtheta;   
                     
                 case 'stance_hit_track'
-                    
                     
                     c_sole = Mod.Leg_params.c_sole;
                     c_floor = Mod.Cart_params.c_floor;
@@ -267,8 +265,6 @@ classdef SEASL < handle & matlab.mixin.Copyable
             
             dq = dq';
         end
-        
-
         
         % Events:
         function [value, isterminal, direction] = Events(Mod, t,X, Floor)

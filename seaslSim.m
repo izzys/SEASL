@@ -1,11 +1,11 @@
-clc;clear all;close all;clear classes;
+clc;%clear all;close all;clear classes;
 set(0,'DefaultFigureWindowStyle','normal')
 
 Sim = Simulation();
 Sim.Graphics = 1;
 %1: number of steps, 2: covergance
 Sim.EndCond = 2;
-Sim = Sim.SetTime(0,0.005,100);
+Sim = Sim.SetTime(0,0.05,100);
 
 % Set up the model:
 Sim.Mod = Sim.Mod.Set('Phase','swing','LinearMotor','in');
@@ -24,13 +24,10 @@ Sim.Con.Init();
 
 Sim.Mod.IC =   [  
     
-
-  -0.246002084097265
-   2.818514872863106
+    0.59
+   -5.37
    0
-   2.433263020964829
-
-
+   1.1
 
 ];
 

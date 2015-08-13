@@ -1,11 +1,7 @@
 function [ IC_mapped, out_type  ] = PoincareMapStep( Sim, dIC )
 
-tend = 10;
-
 Simh = deepcopy(Sim);
-Simh.Graphics = 1;
-Simh.EndCond = [1,1];
-Simh = Simh.SetTime(0,0.01,tend);
+
 
 % Set up the model:
 Simh.Mod = Simh.Mod.Set('Phase','swing','LinearMotor','in');
@@ -34,7 +30,7 @@ end
 out_type = Simh.Out.Type;
 IC_mapped = Simh.ICstore([1 2 4]',1);
 
-    if out_type ~= 1
+    if out_type ~= 2
             IC_mapped = [NaN NaN NaN]';
     end
 

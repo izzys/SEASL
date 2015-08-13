@@ -38,11 +38,16 @@ function [ Sim ] = Init( Sim )
     end
     [ ~, y_ankle ] = GetPos(Sim.Mod, Sim.Mod.IC, 'ankle');
     if y_ankle<Sim.Mod.ankle_radius
-          if strcmp(Sim.Mod.Phase ,'swing')
-             Sim.Mod.Phase = 'stance';
-          else
-             error('Error: wrong IC , foot penetrates ground')
-          end
+        error('Error: foot penetrates ground. consider doing a NIVUN to the x_dot state')
+        
+        
+%           if strcmp(Sim.Mod.Phase ,'swing')
+%              Sim.Mod.Phase = 'stance';
+%           else
+%              error('Error: wrong IC , foot penetrates ground')
+%           end
+
+
     end    
 
     % init model:

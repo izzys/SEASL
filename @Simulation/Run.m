@@ -49,11 +49,12 @@ function [ Sim ] = Run( Sim )
                     case 1 %check only 1 stance phase for each period
                         Sim.stance_counter = Sim.stance_counter+1;
 
-                        if Sim.stance_counter>1
-                            Sim.Out.Type = Sim.EndFlag_MoreThanOneStance;
-                            Sim.Out.Text = 'More than 1 stance phase for period';
-                            Sim.StopSim = 1;
-                        end
+                  %      if Sim.stance_counter>1
+                          %  Sim.Out.Type = Sim.EndFlag_MoreThanOneStance;
+                           % Sim.Out.Text = 'More than 1 stance phase for period';                           
+                         %   Sim.StopSim = 1;
+                 %        disp('More than 1 stance phase for period !!!@%%@$!! (get rid of this???? )')
+                 %       end
 
                     case 2  %check that leg hits track only if theta>0 
                         
@@ -61,6 +62,7 @@ function [ Sim ] = Run( Sim )
                             Sim.Out.Type = Sim.EndFlag_NoSignChange;
                             Sim.Out.Text = 'Leg hits track when theta>0';
                             Sim.StopSim = 1;
+%disp('Leg hits track when theta>0')
                         end
 
                     case 3 % check that foot does not extend into ground
@@ -70,6 +72,10 @@ function [ Sim ] = Run( Sim )
                             Sim.Out.Type = Sim.EndFlag_LegHitsGroundDuringExtend;
                             Sim.Out.Text =' foot penetrates ground during extend';
                             Sim.StopSim = 1;
+%Sim.Mod.Phase = 'stance';
+%disp('foot penetrates ground during extend')
+%[Sim.Mod,Xa(Sim.ModCo)] = Sim.Mod.HandleEvent( 1, XTemp(end,Sim.ModCo),TTemp(end));
+
                         end
                 end
                
