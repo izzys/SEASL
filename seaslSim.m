@@ -1,4 +1,4 @@
-clc;%clear all;close all;clear classes;
+clc;clear all;close all;clear classes;
 set(0,'DefaultFigureWindowStyle','normal')
 
 Sim = Simulation();
