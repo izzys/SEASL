@@ -27,6 +27,11 @@ classdef SEASL < handle & matlab.mixin.Copyable
         Ankle_Torque = 0;
         LinearMotor = 'out'
         
+
+        % reflexes:
+        ExtendReflexOn;
+        ShortenReflexOn;
+
         % Render parameters:
         hip_radius = 0.03;
         hip_color = [0.2,0.6,0.8];
@@ -60,8 +65,10 @@ classdef SEASL < handle & matlab.mixin.Copyable
         LineWidth=1;
         
         slope = 0;
+
         
         SetKeys = {''}
+
                      
     end
     
@@ -293,7 +300,8 @@ classdef SEASL < handle & matlab.mixin.Copyable
             % Event #3 - max height to open leg:
              if strcmp(Mod.Phase,'swing')
 
-                value(3) = X(2)-0.1;
+
+                value(3) = X(2);
                 isterminal(3) = 1;
                 direction(3) = -1;                                 
             end            
@@ -309,7 +317,9 @@ classdef SEASL < handle & matlab.mixin.Copyable
             
             switch evID
                 
-                case 1
+
+                case 1 % Event #1 - foot hits floor:
+
                                
                     e = Mod.Leg_params.e;
                     l = Mod.Leg_params.stance_length;
@@ -332,26 +342,41 @@ classdef SEASL < handle & matlab.mixin.Copyable
                     Mod.x0 = Xb(3)+l*sin(theta);
                     
 
-                case 2
-                    
-        %            Xa(2) = 0;
-                %    Mod.Phase = 'stance_hit_track';
-%                     
-                    Mod.leg_length = Mod.Leg_params.swing_length;
-                    Mod.Phase = 'swing';
-                    Mod.LinearMotor = 'in';
 
-                case 3
-                    Mod.LinearMotor = 'out';
-                    [ ~, y_ankle ] = GetPos(Mod, Xa, 'ankle');
-                    if (y_ankle+1e-8)<Mod.ankle_radius
-                         Mod.Phase = 'stance';
-                         theta = Xb(1);
-                         l = Mod.Leg_params.stance_length;
-                         Mod.x0 = Xb(3)+l*sin(theta);
-                         Xa(4) = 0;
+                case 2 % Event #2 - hip hits track limit at stance phase:
+                    
+                    if Mod.ShortenReflexOn
+                        
+                        Mod.leg_length = Mod.Leg_params.swing_length;
+                        Mod.Phase = 'swing';
+                        Mod.LinearMotor = 'in';
+                        
+                    else
+                        
+                        Xa(2) = 0;
+                        Mod.Phase = 'stance_hit_track'; 
+                        
                     end
+
+
+                    
+                case 3 % Event #3 - max height to open leg:
+                    
+                  if Mod.ExtendReflexOn 
+                      
+                    Mod.LinearMotor = 'out';
+                      
+                  end
+       
+%                          Mod.Phase = 'stance';
+%                          theta = Xb(1);
+%                          l = Mod.Leg_params.stance_length;
+%                          Mod.x0 = Xb(3)+l*sin(theta);
+%                          Xa(4) = 0;
+
             end
+
+
         end
         
 

@@ -1,4 +1,6 @@
-% plot out:
+
+function []= plot_out(Sim)
+
 
 theta = Sim.Out.X(:,1);
 dtheta = Sim.Out.X(:,2);
@@ -16,6 +18,9 @@ zmp1 = Sim.Out.ZMPval1;
 zmp2 = Sim.Out.ZMPval2;
 zmp_time = Sim.Out.ZMPtime_stamp;
 
+
+if ~isempty(Sim.Out.EventsVec)
+    
 
 EventsTime = cell2mat(Sim.Out.EventsVec.Time);
 EventsX = cell2mat(Sim.Out.EventsVec.State);
@@ -139,4 +144,8 @@ end
 color = [rand(1) rand(1) rand(1)];
 plot(theta,dtheta,'color',color)
 xlabel('\theta')
+
 ylabel('d\theta')
+
+end
+
