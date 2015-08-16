@@ -29,10 +29,8 @@ classdef Terrain < handle & matlab.mixin.Copyable
         end_y=0;
         
         % Set keys
-
         SetKeys = {'Type','sinAmp','sinFreq','parK','start_slope',...
             'end_slope','start_x','end_x','start_y','end_y',...
-
             'FloorStep','VertLines','FloorColor','LineWidth'};
         
         % Render parameters
@@ -50,7 +48,9 @@ classdef Terrain < handle & matlab.mixin.Copyable
     methods
         % %%%%%% % Class constructor % %%%%%% %
         function [Te] = Terrain(varargin)
+            
             switch nargin
+                
                 case 0  % create empty terrain (flat)
                     Te; %#ok<VUNUS>
                 case 1  % input is terrain type
@@ -71,9 +71,7 @@ classdef Terrain < handle & matlab.mixin.Copyable
                         case 3  % parabolla init and end slope
                             Te.start_slope=varargin{2};
                             Te.end_slope=varargin{3};
-
                         otherwise % case 0: inclined plane
-
                             Te.start_slope=varargin{2};
                             Te.end_slope=varargin{2};
                     end
@@ -199,9 +197,7 @@ classdef Terrain < handle & matlab.mixin.Copyable
                    sin(alpha), cos(alpha)];
                
             if x<Te.start_x
-
                 y=0*x;
-
             else
                 y=Te.sinAmp*(1-cos(Te.sinFreq*(x-Te.start_x)));
             end
@@ -209,9 +205,7 @@ classdef Terrain < handle & matlab.mixin.Copyable
 
         function [alpha]=SurfSlope1(Te,x)
             if x<Te.start_x
-
                 alpha=0*x;
-
             else
                 alpha=Te.sinAmp*Te.sinFreq*sin(Te.sinFreq*(x));
             end

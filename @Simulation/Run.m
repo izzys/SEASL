@@ -162,7 +162,6 @@ function [ Sim ] = Run( Sim )
             break;
         end
         [TTemp,XTemp,TE,YE,IE] = ...
-
             ode45(@Sim.Derivative,tspan,Sim.IC,options); 
 
         if Sim.infTime == 1
