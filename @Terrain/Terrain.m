@@ -22,7 +22,7 @@ classdef Terrain < handle & matlab.mixin.Copyable
         incline=0;      % Incline (1) up, (-1) down
         start_slope=0;
         end_slope=0;
-        
+
         start_x=0;
         start_y=0;
         end_x=0;

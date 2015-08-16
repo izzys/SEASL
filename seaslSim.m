@@ -6,7 +6,7 @@ Sim.Graphics = 1;
 %1: number of steps, 2: covergance
 Sim.EndCond = 2;
 
-Sim = Sim.SetTime(0,0.005,100);
+Sim = Sim.SetTime(0,0.05,100);
 
 % Set up the model:
 Sim.Mod = Sim.Mod.Set('Phase','swing','LinearMotor','in');
@@ -28,11 +28,10 @@ Sim.Con.Init();
 Sim.Mod.IC =   [  
     
 
-  -0.246002084097265
-   2.818514872863106
+  -1.153
+  -3.982
    0
-   2.433263020964829
-
+   -0.7673
 ];
 
 

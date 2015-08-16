@@ -9,10 +9,10 @@ Sim.Mod.ExtendReflexOn = 1;
 Sim.IClimCyc = [-0.454644171863700 , -2.585322871436600  , 0 , 3.677134034074900 , 0];
 
 % range should be an even number
-Nrange = 6;
+Nrange = 10;
 x_range = linspace (-pi/2 , pi/2 , Nrange)+Sim.IClimCyc(1);
 y_range = linspace (-2*pi , 2*pi , Nrange)+Sim.IClimCyc(2);
-z_range = linspace (-1 , 100 , Nrange)+Sim.IClimCyc(4);
+z_range = linspace (-5 , 5 , Nrange)+Sim.IClimCyc(4);
 
 f = @(dIC)( PoincareMapStep(Sim,dIC) );
 tic
