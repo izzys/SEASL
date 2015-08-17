@@ -5,7 +5,7 @@ Sim = Simulation();
 Sim.Graphics = 1;
 %1: number of steps, 2: covergance
 Sim.EndCond = 2;
-Sim = Sim.SetTime(0,0.05,100);
+Sim = Sim.SetTime(0,0.008,100);
 
 % Set up the model:
 Sim.Mod = Sim.Mod.Set('Phase','swing','LinearMotor','in');
@@ -24,14 +24,8 @@ Sim.Con.Init();
 
 % note that if IC match the stance phase - only the first two IC count:
 
-Sim.Mod.IC =  [  
-    
-   -0.3
-     2
-     0
-     3
+Sim.Mod.IC =  [  -0.3 2 0 3];
 
-];
 
 Sim = Sim.Init();
 

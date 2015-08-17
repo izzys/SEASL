@@ -66,7 +66,7 @@ function [ Sim ] = Init( Sim )
 %         Sim.Con.IC = repmat(Sim.Con.IC,Sim.Con.NumOfNeurons,1);
 %     end
     
-    Sim.IC = [Sim.Mod.IC ; Sim.Con.IC];
+    Sim.IC = [Sim.Mod.IC ,  Sim.Con.IC];
     Sim.StopSim = 0;
     Sim.PauseSim = 0; 
     

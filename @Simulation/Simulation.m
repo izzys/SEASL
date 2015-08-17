@@ -65,7 +65,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
         GNGThresh = [4,4]; % required steps for go/no-go order
         minMaxDiff = [1,0];
         ConvProgr = [0,0];
-        indICtoCheck  = [1 2 4];    
+        indICtoCheck  = [1 2 5];    
         % Rendering params
         Graphics = 1;
         Fig = 0; Once = 1; StopSim;PauseSim;
@@ -162,6 +162,11 @@ classdef Simulation < handle & matlab.mixin.Copyable
 
         function [value, isterminal, direction] = Events(Sim, t, X) 
             
+             [xdim,ydim] = size(X);
+             if xdim>ydim
+                 X = X';
+             end
+            
             value = zeros(Sim.nEvents,1);
             isterminal = ones(Sim.nEvents,1);
             direction = zeros(Sim.nEvents,1);
@@ -179,7 +184,11 @@ classdef Simulation < handle & matlab.mixin.Copyable
         
         function [status] = Output_function(Sim,t,X,flag) 
             
-           
+             [xdim,ydim] = size(X);
+             if xdim>ydim
+                 X = X';
+             end
+             
            %Get control vlaue:
            switch flag
                

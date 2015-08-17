@@ -77,8 +77,8 @@ function [] = Render(Sim,t,X,flag)
     
     if ~isempty(X)
         
-        [COMx,COMy]=Sim.Mod.GetPos(X,'COM');
-
+        [COMx,COMy]=Sim.Mod.GetPos(X(end,:),'COM');
+        
          Sim.FlMin = COMx-1.5*Sim.AR*Sim.Mod.cart_length;
          Sim.FlMax = COMx+1.5*Sim.AR*Sim.Mod.cart_length;
          Sim.HeightMin = COMy-4/Sim.AR*Sim.Mod.cart_height;
@@ -87,7 +87,7 @@ function [] = Render(Sim,t,X,flag)
          axis([Sim.FlMin Sim.FlMax Sim.HeightMin Sim.HeightMax]);      
 
         % Update model render
-        Sim.Mod = Sim.Mod.Render(X(Sim.ModCo));
+        Sim.Mod = Sim.Mod.Render(X(end,Sim.ModCo));
         % Update environment render
         Sim.Env = Sim.Env.Render(Sim.FlMin,Sim.FlMax);
         % Update time display

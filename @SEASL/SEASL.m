@@ -81,7 +81,6 @@ classdef SEASL < handle & matlab.mixin.Copyable
             
         end
 
-        
         %  Get position:
         function [ x, y ] = GetPos(Mod, q, which)
             
@@ -91,18 +90,18 @@ classdef SEASL < handle & matlab.mixin.Copyable
                     
                     case 'swing'    
                         
-                         x = q(3);
+                         x = q(:,3);
                          y = 2*Mod.cart_wheel_radius+Mod.cart_height-Mod.cart_width/2;
                         
                     case 'tance_hit_track'
 
-                         x = q(3);
-                         theta = q(1);
+                         x = q(:,3);
+                         theta = q(:,1);
                          y = Mod.Leg_params.stance_length*cos(theta)+Mod.ankle_radius;
                         
                     case  'stance' 
 
-                         theta = q(1);
+                         theta = q(:,1);
                          
                          x = Mod.x0-Mod.Leg_params.stance_length*sin(theta);
                          y = Mod.Leg_params.stance_length*cos(theta)+Mod.ankle_radius;  
@@ -122,8 +121,8 @@ classdef SEASL < handle & matlab.mixin.Copyable
                     
                     case 'in' 
                         
-                        x_cart = q(3);
-                        theta = q(1);
+                        x_cart = q(:,3);
+                        theta = q(:,1);
                        
                         x = x_cart + Mod.Leg_params.swing_length*sin(theta);
                         
@@ -138,8 +137,8 @@ classdef SEASL < handle & matlab.mixin.Copyable
                             
                             case 'swing' 
                                 
-                                x_cart = q(3);
-                                theta = q(1);
+                                x_cart = q(:,3);
+                                theta = q(:,1);
 
                                 x = x_cart + Mod.Leg_params.stance_length*sin(theta);
 
@@ -155,8 +154,8 @@ classdef SEASL < handle & matlab.mixin.Copyable
             
                             case 'stance_hit_track'
                                 
-                               x_cart = q(3);
-                               theta = q(1);
+                               x_cart = q(:,3);
+                               theta = q(:,1);
                                 
                                x = x_cart + Mod.Leg_params.stance_length*sin(theta);
                                y = Mod.ankle_radius;
@@ -179,12 +178,13 @@ classdef SEASL < handle & matlab.mixin.Copyable
                             
                     case {'swing','stance_hit_track'} 
                         
-                        x = q(3);
+                        x = q(:,3);
                         y = NaN;
 
                     case  'stance' 
-
-                         x = Mod.x0-Mod.Leg_params.stance_length*sin(q(1));
+                         theta  = q(:,1);
+                            
+                         x = Mod.x0-Mod.Leg_params.stance_length*sin(theta);
                          y = NaN;
                          
                     otherwise
@@ -203,7 +203,7 @@ classdef SEASL < handle & matlab.mixin.Copyable
                             
                     case {'swing','stance_hit_track'} 
                         
-                        x = q(3);
+                        x = q(:,3);
                         y = Mod.cart_height/2;
 
                     case  'stance' 
@@ -227,21 +227,21 @@ classdef SEASL < handle & matlab.mixin.Copyable
                     
                     case 'swing'    
                         
-                         xdot = q(4);
+                         xdot = q(:,4);
                          ydot = 0;
                         
                     case 'tance_hit_track'
 
-                         xdot = q(4);
+                         xdot = q(:,4);
                          ydot = 0;
                         
                     case  'stance' 
 
-                         theta = q(1);
-                         dtheta = q(2);
+                         theta = q(:,1);
+                         dtheta = q(:,2);
                           
-                         xdot = -Mod.Leg_params.stance_length*cos(theta)*dtheta;
-                         ydot = -Mod.Leg_params.stance_length*sin(theta)*dtheta;  
+                         xdot = -Mod.Leg_params.stance_length*cos(theta).*dtheta;
+                         ydot = -Mod.Leg_params.stance_length*sin(theta).*dtheta;  
                          
                     otherwise
                         error('Error: stance/swing not defined')
@@ -267,12 +267,12 @@ classdef SEASL < handle & matlab.mixin.Copyable
                             
                     case {'swing','stance_hit_track'} 
                         
-                        xdot = q(3);
+                        xdot = q(:,3);
                         ydot = NaN;
 
                     case  'stance' 
 
-                         xdot = -Mod.Leg_params.stance_length*cos(q(1))*q(2);
+                         xdot = -Mod.Leg_params.stance_length*cos(q(:,1)).*q(:,2);
                          ydot = 0;
                          
                     otherwise
@@ -291,12 +291,12 @@ classdef SEASL < handle & matlab.mixin.Copyable
                             
                     case {'swing','stance_hit_track'} 
                         
-                        xdot = q(4);
+                        xdot = q(:,4);
                         ydot = 0;
 
                     case  'stance' 
 
-                         xdot = -Mod.Leg_params.stance_length*cos(q(1))*q(2);
+                         xdot = -Mod.Leg_params.stance_length*cos(q(:,1)).*q(:,2);
                          ydot = 0;
                          
                     otherwise
@@ -404,11 +404,9 @@ classdef SEASL < handle & matlab.mixin.Copyable
             dq = dq';
         end
         
-
-        
         % Events:
         function [value, isterminal, direction] = Events(Mod, t,X, Floor)
-            
+                       
             value = ones(Mod.nEvents,1);
             isterminal = zeros(Mod.nEvents,1);
             direction = ones(Mod.nEvents,1);
@@ -453,7 +451,7 @@ classdef SEASL < handle & matlab.mixin.Copyable
                     e = Mod.Leg_params.e;
                     l = Mod.Leg_params.stance_length;
                     m_cart = Mod.Cart_params.m;
-                    I=  Mod.Leg_params.stance_I;
+                    I =  Mod.Leg_params.stance_I;
                 
                     theta = Xb(1);
                     dtheta_b = Xb(2);
@@ -462,10 +460,12 @@ classdef SEASL < handle & matlab.mixin.Copyable
 
                     dtheta_a = e*(I*dtheta_b-m_cart*l*cos(theta)*dx_b)/(I+m_cart*l^2*cos(theta)^2);
 
-                    dx_a = -l*cos(theta)*dtheta_a; 
+               %     dx_a = -l*cos(theta)*dtheta_a; 
 
                     Xa(2) = dtheta_a;
-                    Xa(4) = dx_a;
+                    
+                    Xa(3) = NaN;
+                    Xa(4) = NaN;
                     
                     Mod.Phase = 'stance';
                     Mod.x0 = Xb(3)+l*sin(theta);

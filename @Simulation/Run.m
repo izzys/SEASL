@@ -174,7 +174,13 @@ function [ Sim ] = Run( Sim )
         end
         
         % Save state and time
-        X = [X; XTemp]; %#ok<AGROW>
+        if strcmp(Sim.Mod.Phase, 'stance')
+
+                [XTemp(:,3) , ~] = Sim.Mod.GetPos(XTemp,'cart'); 
+                [XTemp(:,4) , ~] = Sim.Mod.GetVel(XTemp,'cart');  
+        end
+        
+        X = [X; XTemp];%#ok<AGROW>
         Sim.Out.T = [Sim.Out.T; TTemp];
         Sim.RecordEvents(TE,YE,IE);
     end
