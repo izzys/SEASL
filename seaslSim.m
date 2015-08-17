@@ -5,7 +5,7 @@ Sim = Simulation();
 Sim.Graphics = 1;
 %1: number of steps, 2: covergance
 Sim.EndCond = 2;
-Sim = Sim.SetTime(0,0.005,100);
+Sim = Sim.SetTime(0,0.05,100);
 
 % Set up the model:
 Sim.Mod = Sim.Mod.Set('Phase','swing','LinearMotor','in');
@@ -16,21 +16,20 @@ Sim.Mod.ExtendReflexOn = 1;
 % Init controller:
 Sim.Con = Sim.Con.Set('Period',1.2,'phi',[0.1 0.25 0.4 0.99],'tau',[2 -0.9]); 
 Sim.Con.Controller_Type = 'CPG';
-Sim.Con.IC = 0;%[1;0;Sim.Con.omega0;1;0;];
+Sim.Con.IC =   0;% 0.7598157113686;%[1;0;Sim.Con.omega0;1;0;];
 Sim.Con.Init();
 
 % Simulate:
-%Sim.Mod.IC = 1.0e+02 *[ -0.004546441718706 -0.025853228714697  0   0.036771340341327]'; % LC
+%Sim.Mod.IC = 1.0e+02 *[ 0.003593912104280 -0.036910752740697  0   0.031097309184038]'; % LC
 
-Sim.Mod.IC =   [  
+% note that if IC match the stance phase - only the first two IC count:
+
+Sim.Mod.IC =  [  
     
-
-  -0.246002084097265
-   2.818514872863106
-   0
-   2.433263020964829
-
-
+   -0.3
+     2
+     0
+     3
 
 ];
 

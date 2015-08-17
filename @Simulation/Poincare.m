@@ -7,8 +7,8 @@ if sim.PMFull == 1
 else
     Ncoord = length(sim.ModCo);
 end
-Ncoord = 4;
-Coords = [1 2 4 5];
+Ncoord = 3;
+Coords = [1 2 5];
 
 % Limit cycle initial conditions
 IC = repmat(sim.IClimCyc(Coords), 1, Ncoord);

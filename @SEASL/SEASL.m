@@ -87,14 +87,26 @@ classdef SEASL < handle & matlab.mixin.Copyable
             
             if strcmp(which,'hip')
                 
-                x = q(3);
-                theta = q(1);
-                
                 switch Mod.Phase
-                    case 'swing'      
-                        y = 2*Mod.cart_wheel_radius+Mod.cart_height-Mod.cart_width/2;
-                    case { 'stance' ,  'stance_hit_track'}
-                        y = Mod.Leg_params.stance_length*cos(theta)+Mod.ankle_radius;
+                    
+                    case 'swing'    
+                        
+                         x = q(3);
+                         y = 2*Mod.cart_wheel_radius+Mod.cart_height-Mod.cart_width/2;
+                        
+                    case 'tance_hit_track'
+
+                         x = q(3);
+                         theta = q(1);
+                         y = Mod.Leg_params.stance_length*cos(theta)+Mod.ankle_radius;
+                        
+                    case  'stance' 
+
+                         theta = q(1);
+                         
+                         x = Mod.x0-Mod.Leg_params.stance_length*sin(theta);
+                         y = Mod.Leg_params.stance_length*cos(theta)+Mod.ankle_radius;  
+                         
                     otherwise
                         error('Error: stance/swing not defined')
                 end
@@ -104,12 +116,14 @@ classdef SEASL < handle & matlab.mixin.Copyable
             
             if strcmp(which,'ankle')
                 
-                x_cart = q(3);
-                theta = q(1);
+
 
                 switch Mod.LinearMotor
                     
                     case 'in' 
+                        
+                        x_cart = q(3);
+                        theta = q(1);
                        
                         x = x_cart + Mod.Leg_params.swing_length*sin(theta);
                         
@@ -123,6 +137,9 @@ classdef SEASL < handle & matlab.mixin.Copyable
                         switch Mod.Phase
                             
                             case 'swing' 
+                                
+                                x_cart = q(3);
+                                theta = q(1);
 
                                 x = x_cart + Mod.Leg_params.stance_length*sin(theta);
 
@@ -137,6 +154,9 @@ classdef SEASL < handle & matlab.mixin.Copyable
                                 y = Mod.ankle_radius;
             
                             case 'stance_hit_track'
+                                
+                               x_cart = q(3);
+                               theta = q(1);
                                 
                                x = x_cart + Mod.Leg_params.stance_length*sin(theta);
                                y = Mod.ankle_radius;
@@ -154,22 +174,138 @@ classdef SEASL < handle & matlab.mixin.Copyable
             end
             
             if strcmp(which,'cart')
-                x = q(3);
-                y = NaN;
+                
+                switch Mod.Phase
+                            
+                    case {'swing','stance_hit_track'} 
+                        
+                        x = q(3);
+                        y = NaN;
+
+                    case  'stance' 
+
+                         x = Mod.x0-Mod.Leg_params.stance_length*sin(q(1));
+                         y = NaN;
+                         
+                    otherwise
+                        error('Error: stance/swing phase not defined')
+                end
+                
+
+                                       
                 return;
             end
 
             if strcmp(which,'COM')
-
-                x = q(3);
-                y = Mod.cart_height/2;
                 
+                
+                switch Mod.Phase
+                            
+                    case {'swing','stance_hit_track'} 
+                        
+                        x = q(3);
+                        y = Mod.cart_height/2;
+
+                    case  'stance' 
+
+                         x = Mod.x0-Mod.Leg_params.stance_length*sin(q(1));
+                         y = Mod.cart_height/2;
+                         
+                    otherwise
+                        error('Error: stance/swing phase not defined')
+                end 
+
             end
         end
         
         % Get velocity:
-%         function [ xdot, ydot ] = GetVel(Mod, X, which)
-%         end
+        function [ xdot, ydot ] = GetVel(Mod, q, which)
+            
+           if strcmp(which,'hip')
+                
+                switch Mod.Phase
+                    
+                    case 'swing'    
+                        
+                         xdot = q(4);
+                         ydot = 0;
+                        
+                    case 'tance_hit_track'
+
+                         xdot = q(4);
+                         ydot = 0;
+                        
+                    case  'stance' 
+
+                         theta = q(1);
+                         dtheta = q(2);
+                          
+                         xdot = -Mod.Leg_params.stance_length*cos(theta)*dtheta;
+                         ydot = -Mod.Leg_params.stance_length*sin(theta)*dtheta;  
+                         
+                    otherwise
+                        error('Error: stance/swing not defined')
+                end
+
+                return;
+            end
+            
+            if strcmp(which,'ankle')
+                
+
+                
+                error('Error: not defined yet. TODO')
+                
+                 xdot = NaN;
+                 ydot = NaN;
+                return;
+            end
+            
+            if strcmp(which,'cart')
+                
+                switch Mod.Phase
+                            
+                    case {'swing','stance_hit_track'} 
+                        
+                        xdot = q(3);
+                        ydot = NaN;
+
+                    case  'stance' 
+
+                         xdot = -Mod.Leg_params.stance_length*cos(q(1))*q(2);
+                         ydot = 0;
+                         
+                    otherwise
+                        error('Error: stance/swing phase not defined')
+                end
+                
+
+                                       
+                return;
+            end
+
+            if strcmp(which,'COM')
+                
+                
+                switch Mod.Phase
+                            
+                    case {'swing','stance_hit_track'} 
+                        
+                        xdot = q(4);
+                        ydot = 0;
+
+                    case  'stance' 
+
+                         xdot = -Mod.Leg_params.stance_length*cos(q(1))*q(2);
+                         ydot = 0;
+                         
+                    otherwise
+                        error('Error: stance/swing phase not defined')
+                end 
+
+            end  
+            
+        end
         
         % Derivative:
         function [dq] = Derivative(Mod, t, q) %#ok<INUSL>
@@ -240,8 +376,8 @@ classdef SEASL < handle & matlab.mixin.Copyable
                     dq(1) = q(2);
                     dq(2) = 1/M*(G1-G2+G3-G4+tau);
                     
-                    dq(3) = -l*cos(theta)*dtheta; 
-                    dq(4) = l*sin(theta)*dtheta^2-l*cos(theta)*dtheta;   
+                    dq(3) = NaN;%-l*cos(theta)*dtheta; 
+                    dq(4) = NaN;%l*sin(theta)*dtheta^2-l*cos(theta)*dtheta;   
                     
                 case 'stance_hit_track'
                     
@@ -339,9 +475,17 @@ classdef SEASL < handle & matlab.mixin.Copyable
                     
                     if Mod.ShortenReflexOn
                         
+                        [x , ~] = Mod.GetPos(Xa,'hip');
+                        [dx, ~] = Mod.GetVel(Xa,'hip');
+                        
+                        
                         Mod.leg_length = Mod.Leg_params.swing_length;
                         Mod.Phase = 'swing';
                         Mod.LinearMotor = 'in';
+                        
+
+                        Xa(3) = x;
+                        Xa(4) = dx;
                         
                     else
                         
@@ -365,6 +509,9 @@ classdef SEASL < handle & matlab.mixin.Copyable
 %                          l = Mod.Leg_params.stance_length;
 %                          Mod.x0 = Xb(3)+l*sin(theta);
 %                          Xa(4) = 0;
+                otherwise
+                     
+                     error('Error: Model event not handled.')
 
             end
 

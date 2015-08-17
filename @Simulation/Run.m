@@ -48,15 +48,15 @@ function [ Sim ] = Run( Sim )
                     
                     case 1 %check only 1 stance phase for each period
                         Sim.stance_counter = Sim.stance_counter+1;
-
-                        if Sim.stance_counter>1
-                            Sim.Out.Type = Sim.EndFlag_MoreThanOneStance;
-                            Sim.Out.Text = 'More than 1 stance phase for period';
-                            Sim.StopSim = 1;
-                        end
+                        StepDone = 1;
+%                         if Sim.stance_counter>1
+%                             Sim.Out.Type = Sim.EndFlag_MoreThanOneStance;
+%                             Sim.Out.Text = 'More than 1 stance phase for period';
+%                             Sim.StopSim = 1;
+%                         end
 
                     case 2  %check that leg hits track only if theta>0 
-                        
+                                            
                         if Xa(1)>0
                             Sim.Out.Type = Sim.EndFlag_NoSignChange;
                             Sim.Out.Text = 'Leg hits track when theta>0';
@@ -73,8 +73,6 @@ function [ Sim ] = Run( Sim )
                         end
                 end
                
-               
-                
             end
 
             % Is it a controller event?
@@ -85,7 +83,7 @@ function [ Sim ] = Run( Sim )
                     Sim.Con.HandleEvent(ConEvID, XTemp(end,Sim.ConCo),TTemp(end));
                               
                 if ConEvID==1
-                    StepDone = 1;
+
                     
 %                         % check change in sign at stance phase:
 %                         ind_impact = find(cell2mat(Sim.Out.EventsVec.Type)==1,1,'last');
@@ -108,9 +106,18 @@ function [ Sim ] = Run( Sim )
                 
                                 
                 if Sim.Con.Linear_motor_in
+                    
                     Sim.Con.Linear_motor_in = 0;
                     Sim.Mod.LinearMotor = 'in';
                     Sim.Mod.Phase = 'swing';
+                    Sim.Mod.leg_length = Sim.Mod.Leg_params.swing_length;
+                    
+                    x_a = Sim.Mod.GetPos(Xa,'hip');
+                    dx_a = Mod.GetVel(Xa,'hip');
+                        
+                    Xa(3) = x_a;
+                    Xa(4) = dx_a;
+                    
                 end
                 
                 if Sim.Con.Linear_motor_out
