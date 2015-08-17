@@ -1,4 +1,4 @@
-clc;clear all;close all;clear classes;
+clc;%clear all;close all;clear classes;
 set(0,'DefaultFigureWindowStyle','normal')
 
 Sim = Simulation();
@@ -24,10 +24,10 @@ Sim.Con.Init();
 
 Sim.Mod.IC =   [  
     
-    0.59
-   -5.37
+    0.37
+   -1.263
    0
-   1.1
+   4.203
 
 ];
 

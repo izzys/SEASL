@@ -15,8 +15,45 @@ CM(ind0(1),ind0(2),ind0(3)) = 1;
     Minute = minute(date_and_hour);
     Seconds = second(date_and_hour);
     
+%%%%%%%%%%   test %%%%%%%%%%%%%%
+% ll = length(CM);
+% CM(:,:,1) = spiral(5);    
+% CM(:,:,2) = spiral(5)+ll^2;     
+% CM(:,:,3) = spiral(5)+2*ll^2;      
+% CM(:,:,4) = spiral(5)+3*ll^2; 
+% CM(:,:,5) = spiral(5)+4*ll^2; 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[sizeCMx , sizeCMy , sizeCMz ]= size(CM);
+if sizeCMx == sizeCMy && ~isodd(sizeCMx-1)
     
-for i = 1:length(CM(:))
+    temp = spiral(sizeCMx) ;   
+    [~, xy_ind] = sort(temp(:));
+ %   xy_ind = xy_ind + length(CM(:)) - max(xy_ind);
+    z_ind_mid = ceil(sizeCMz/2);
+    z_ind = z_ind_mid;
+    sign = 1;
+    for jj = sort( repmat( 1:floor(sizeCMz/2) ,1,2 ) )
+       z_ind = [z_ind , z_ind_mid+jj*sign] ;
+       sign = -1*sign;
+    end
+    SpiralInd = [];
+    for i = (z_ind-1)
+       SpiralInd =  [SpiralInd ; xy_ind+i*length(xy_ind(:))  ]  ;
+    end
+    SpiralInd = SpiralInd';
+else 
+    if ~isodd(sizeCMx)
+        disp('CM has not-even dimentions. aborting spiral mapping')
+    end
+
+    if sizeCMx ~= sizeCMy
+        disp('CM x and y dimentions are not equal. aborting spiral mapping')
+    end
+    
+    SpiralInd = 1:length(CM(:));
+end
+
+for i = SpiralInd
     i
     if CM(i) ~= -1
         continue

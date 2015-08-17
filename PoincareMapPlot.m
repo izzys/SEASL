@@ -6,7 +6,7 @@ hold on
 
 for i = 1:length(CM(:))
     
-    if CM(i)>0
+    if CM(i)==1
         MarkerSize = 25;
         MarkerType = '+';
         MarkerColor = 'b';
@@ -15,10 +15,14 @@ for i = 1:length(CM(:))
         P = PointFromCell([ix iy iz],x_range,y_range,z_range);
         scatter3(P(1),P(2),P(3),MarkerSize,MarkerColor,MarkerType,'LineWidth',1)   
 
-    else
-%         MarkerSize = 8;
-%         MarkerType = '.';
-%         MarkerColor = 'r';    
+    elseif CM(i)==0
+        MarkerSize = 8;
+        MarkerType = '.';
+        MarkerColor = 'r';
+        
+        [ix,iy,iz] = ind2sub(size(CM),i);
+        P = PointFromCell([ix iy iz],x_range,y_range,z_range);
+        scatter3(P(1),P(2),P(3),MarkerSize,MarkerColor,MarkerType,'LineWidth',1)   
     end
 
 end

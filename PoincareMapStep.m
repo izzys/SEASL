@@ -30,7 +30,7 @@ end
 out_type = Simh.Out.Type;
 IC_mapped = Simh.ICstore([1 2 4]',1);
 
-    if out_type ~= 2
+    if out_type ~= 1 %make sure to fix end_condition flag to 1 (path ) or 2  (full)!!!
             IC_mapped = [NaN NaN NaN]';
     end
 

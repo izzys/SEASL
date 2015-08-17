@@ -31,6 +31,7 @@ function [ Sim ] = Init( Sim )
     if y_hip<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
         if strcmp(Sim.Mod.Phase ,'stance')
             Sim.Mod.Phase = 'swing';
+             disp('hip was too low. Phase was changed from stance to swing ')
         else
             error('Error: wrong IC , hip too low')
         end
@@ -38,15 +39,14 @@ function [ Sim ] = Init( Sim )
     end
     [ ~, y_ankle ] = GetPos(Sim.Mod, Sim.Mod.IC, 'ankle');
     if y_ankle<Sim.Mod.ankle_radius
-        error('Error: foot penetrates ground. consider doing a NIVUN to the x_dot state')
-        
-        
-%           if strcmp(Sim.Mod.Phase ,'swing')
-%              Sim.Mod.Phase = 'stance';
-%           else
-%              error('Error: wrong IC , foot penetrates ground')
-%           end
+       % error('Error: foot penetrates ground. consider doing a NIVUN to the x_dot state')
 
+          if strcmp(Sim.Mod.Phase ,'swing')
+             Sim.Mod.Phase = 'stance';
+             disp('foot penetrated ground. Phase was changed from swing to stance ')
+          else
+             error('Error: wrong IC , foot penetrates ground')
+          end
 
     end    
 
