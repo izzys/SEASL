@@ -13,7 +13,10 @@ classdef SEASLController < handle & matlab.mixin.Copyable
         Linear_motor_out = 0;
         
         % flag to shorten leg at end of period:
-        ShortenAtPeriod;
+
+        ExtendAtPhase;
+        ShortenAtPhase;
+
         
         % Controller type:
         Controller_Type; 
@@ -32,6 +35,8 @@ classdef SEASLController < handle & matlab.mixin.Copyable
         % CPG parameters:
         Period;
         tau;
+        phi_tau;
+        phi_reflex;
         phi;
         
     end
@@ -46,12 +51,22 @@ classdef SEASLController < handle & matlab.mixin.Copyable
         function [NC] = Init(NC)
             
           switch NC.Controller_Type
-
-                
+              
               case 'CPG'
                   
-                NC.nEvents = 1+length(NC.phi);
                 NC.omega0 = 1/NC.Period;
+                NC.phi = [NC.phi_tau,  NC.phi_reflex ] ;
+                NC.nEvents = 1+length(NC.phi);
+                
+                %set initial tourque:
+                NC.u = 0;
+                if NC.IC>NC.phi_tau(1) && NC.IC<NC.phi_tau(2)
+                    NC.u = NC.tau(1);
+                end
+                if NC.IC>NC.phi_tau(3) && NC.IC<NC.phi_tau(4)
+                    NC.u = NC.tau(2);
+                end
+               
               otherwise
                   
                   return;
@@ -100,9 +115,7 @@ classdef SEASLController < handle & matlab.mixin.Copyable
                        isterminal(i) = 1;
                        direction(i) = -1;
                    end
-                   
-                   
-                 
+
                otherwise
                   
                     return;
@@ -121,9 +134,11 @@ classdef SEASLController < handle & matlab.mixin.Copyable
                 case 1 % end of periof
                   
                     Xafter = 0;
-                        if NC.ShortenAtPeriod
-                             NC.Linear_motor_in = 1;
-                        end
+
+%                         if NC.ShortenAtPhase
+%                              NC.Linear_motor_in = 1;
+%                         end
+
                     NC.u = 0;
              
                 case 2  %phi1
@@ -141,7 +156,15 @@ classdef SEASLController < handle & matlab.mixin.Copyable
                 case 5  %phi4
                     
                     NC.u = 0;
-                     
+                    
+                    
+                case 6  % short
+                    
+                    NC.Linear_motor_in = 1;
+                    
+                case 7  % extend
+                    
+                    NC.Linear_motor_out = 1;
             end
             
         end
@@ -205,7 +228,7 @@ classdef SEASLController < handle & matlab.mixin.Copyable
                    
                otherwise
                    
-                       T = 0;
+                   T = 0;
            end
            
        end

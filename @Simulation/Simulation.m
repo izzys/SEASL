@@ -46,10 +46,12 @@ classdef Simulation < handle & matlab.mixin.Copyable
         
         StepsTaken;
         EventsCounter = 0; 
-        ICstore; nICsStored = 10;
+
+        ICstore; nICsStored = 5;
         minDiff = 1e-8; % Min. difference for LC convergence
 
-        stepsReq = 10; % Steps of minDiff required for convergence
+        stepsReq = 5; % Steps of minDiff required for convergence
+
         stepsSS; % Steps taken since minDiff
         
         
@@ -65,7 +67,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
         GNGThresh = [4,4]; % required steps for go/no-go order
         minMaxDiff = [1,0];
         ConvProgr = [0,0];
-        indICtoCheck  = [1 2 4];    
+        indICtoCheck  = [1 2 5];    
         % Rendering params
         Graphics = 1;
         Fig = 0; Once = 1; StopSim;PauseSim;
@@ -85,6 +87,8 @@ classdef Simulation < handle & matlab.mixin.Copyable
         Colors = {[1 0 0],[0 0 1],[0 1 0],[0 0 0]};
         
         VideoWriterObj;
+        
+        DebugMode = 0;
     end
     
     methods
@@ -162,6 +166,11 @@ classdef Simulation < handle & matlab.mixin.Copyable
 
         function [value, isterminal, direction] = Events(Sim, t, X) 
             
+             [xdim,ydim] = size(X);
+             if xdim>ydim
+                 X = X';
+             end
+            
             value = zeros(Sim.nEvents,1);
             isterminal = ones(Sim.nEvents,1);
             direction = zeros(Sim.nEvents,1);
@@ -179,7 +188,11 @@ classdef Simulation < handle & matlab.mixin.Copyable
         
         function [status] = Output_function(Sim,t,X,flag) 
             
-           
+             [xdim,ydim] = size(X);
+             if xdim>ydim
+                 X = X';
+             end
+             
            %Get control vlaue:
            switch flag
                
@@ -288,6 +301,13 @@ classdef Simulation < handle & matlab.mixin.Copyable
            if ~isempty(IE)
             
                Sim.EventsCounter = Sim.EventsCounter+1;
+
+                   if sum(isnan(YE(end,:))) 
+                       [  x , ~ ] = Sim.Mod.GetPos( YE(end,:), 'cart');
+                       [ dx , ~ ] = Sim.Mod.GetVel( YE(end,:), 'cart');
+                       YE(end,3) = x;
+                       YE(end,4) = dx;
+                   end
 
                Sim.Out.EventsVec.Type{Sim.EventsCounter} = IE(end);
                Sim.Out.EventsVec.Time{Sim.EventsCounter} = TE(end);

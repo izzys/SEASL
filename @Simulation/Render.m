@@ -77,8 +77,8 @@ function [] = Render(Sim,t,X,flag)
     
     if ~isempty(X)
         
-        [COMx,COMy]=Sim.Mod.GetPos(X,'COM');
-
+        [COMx,COMy]=Sim.Mod.GetPos(X(end,:),'COM');
+        
          Sim.FlMin = COMx-1.5*Sim.AR*Sim.Mod.cart_length;
          Sim.FlMax = COMx+1.5*Sim.AR*Sim.Mod.cart_length;
          Sim.HeightMin = COMy-4/Sim.AR*Sim.Mod.cart_height;
@@ -87,7 +87,7 @@ function [] = Render(Sim,t,X,flag)
          axis([Sim.FlMin Sim.FlMax Sim.HeightMin Sim.HeightMax]);      
 
         % Update model render
-        Sim.Mod = Sim.Mod.Render(X(Sim.ModCo));
+        Sim.Mod = Sim.Mod.Render(X(end,Sim.ModCo));
         % Update environment render
         Sim.Env = Sim.Env.Render(Sim.FlMin,Sim.FlMax);
         % Update time display
@@ -96,13 +96,13 @@ function [] = Render(Sim,t,X,flag)
         % Update convergence display
         Period = find(Sim.stepsSS>0,1,'first');
         if ~isempty(Period)
-            diff = norm(Sim.ICstore(Sim.indICtoCheck,1) - Sim.ICstore(Sim.indICtoCheck,1+Period));
+            diff = norm(Sim.ICstore(1,Sim.indICtoCheck) - Sim.ICstore(1+Period,Sim.indICtoCheck));
             set(Sim.hConv,'string',...
                 sprintf(Sim.ConvStr,diff,int2str(Period)),...
                     'backgroundcolor',[0.5 1 0.5]);
         else
             
-            diff = norm(Sim.ICstore(Sim.indICtoCheck,1) - Sim.ICstore(Sim.indICtoCheck,2));
+            diff = norm(Sim.ICstore(1,Sim.indICtoCheck) - Sim.ICstore(2,Sim.indICtoCheck));
             set(Sim.hConv,'string',...
                 sprintf(Sim.ConvStr,diff,'-'),...
                     'backgroundcolor',get(gca,'color'));
