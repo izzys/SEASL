@@ -1,19 +1,18 @@
 function [EigVal,EigVec] = Poincare( sim )
 % Calculates the Linearized Poincare eigenvalues
 % Version 0.1 - 10/05/2014
+% 
+% if sim.PMFull == 1
+%     Ncoord = sim.stDim;
+% else
+%     Ncoord = length(sim.ModCo);
+% end
 
-
-if sim.PMFull == 1
-    Ncoord = sim.stDim;
-else
-    Ncoord = length(sim.ModCo);
-end
-Ncoord = 4;
-Coords = [1 2 4 5];
-
+Coords = [ 2 5];
+Ncoord = length(Coords);
 
 % Limit cycle initial conditions
-IC = repmat(sim.IClimCyc(Coords), 1, Ncoord);
+IC = repmat(sim.IClimCyc(Coords), Ncoord, 1);
 
 % Disturbed initial conditions
 dIC = IC;
@@ -27,21 +26,20 @@ PMSim = copy(sim);
 PMSim.EndCond = [1,sim.Period(1)];
 %Slope = PMSim.Env.SurfSlope(PMSim.Mod.xS);
 for d = 1:Ncoord
-    PMSim.Graphics = 0;
-    PMSim.Mod = PMSim.Mod.Set('Phase','swing','LinearMotor','in');
+    PMSim.Graphics = 1;
+    PMSim.Mod = PMSim.Mod.Set('Phase','stance','LinearMotor','out');
 
 
     % Init controller:
 
-    PMSim.Con.IC = 0;
+    PMSim.Con.IC = dIC(d,2);
     PMSim.Con.Init();
     
-    PMSim.Mod.IC([1 2 4]) = dIC([1 2 3],d);
-    PMSim.Mod.IC(3)=0;
+    PMSim.Mod.IC(1) = sim.IClimCyc(1);  
+    PMSim.Mod.IC(2) = dIC(d,1);
+    PMSim.Mod.IC([3 4])=[NaN NaN];
     PMSim = PMSim.Init();
-%     PMSim.Con = PMSim.Con.Reset(PMSim.IC(PMSim.ConCo));
-%     PMSim.Con = PMSim.Con.HandleExtFB(PMSim.IC(PMSim.ModCo),...
-%         PMSim.IC(PMSim.ConCo),Slope);
+
     PMSim = PMSim.Run();
 
 
@@ -52,7 +50,8 @@ for d = 1:Ncoord
 %         return;
 %     end
 
-    dICp(:,d) = PMSim.ICstore(Coords,1);
+    dICp(d,:) = PMSim.ICstore(1,Coords);
+
 end
 
 % Calculate deviation

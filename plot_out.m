@@ -1,7 +1,6 @@
 
 function []= plot_out(Sim)
 
-
 theta = Sim.Out.X(:,1);
 dtheta = Sim.Out.X(:,2);
 x = Sim.Out.X(:,3);
@@ -51,7 +50,7 @@ Event3_time = EventsTime(ind_event3);
 Event3_state = EventsX(ind_event3,:);
 Event3_sym = 'vk';
 if ~isempty(ind_event3)
-    Legend3 = 'Event3 - Extend leg (at max height)';
+    Legend3 = 'Event3 -  max height';
 else
     Legend3 = '';
 end

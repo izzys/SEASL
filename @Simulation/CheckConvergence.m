@@ -13,7 +13,7 @@ function [ sim ] = CheckConvergence( sim )
         if Checked(p)
             continue;
         end
-        diff = norm(sim.ICstore(sim.indICtoCheck,1) - sim.ICstore(sim.indICtoCheck,1+p));
+        diff = norm(sim.ICstore(1,sim.indICtoCheck) - sim.ICstore(1+p,sim.indICtoCheck));
         
         if diff < sim.minDiff
             % Set every period multiple of p as converging
@@ -74,7 +74,7 @@ function [ sim ] = CheckConvergence( sim )
                         % Finish the simulation
                         sim.Out.Type = 6;
                         sim.Out.Text = 'GO: Sim was converging';
-                        sim.IClimCyc = sim.ICstore(:,1);
+                        sim.IClimCyc = sim.ICstore(1,:);
                         sim.StopSim = 1;
                     end
                 end
@@ -107,7 +107,8 @@ function [ sim ] = CheckConvergence( sim )
     sim.stepsSS = sim.stepsSS + Converge;
     
     % If the sim is set to stop after convergence:
-    if sim.EndCond == 2        
+    if sim.EndCond == 2     
+        
         Period = find(sim.stepsSS >= sim.stepsReq);
         Increasing = find(Converge == 1, 1, 'first');
         if ~isempty(Period)
@@ -118,7 +119,7 @@ function [ sim ] = CheckConvergence( sim )
                     num2str(Period(1)),' after ',num2str(sim.StepsTaken),' steps'];
                 
                 % Prepare data for Poincare computation
-                sim.IClimCyc = sim.ICstore(:,1);
+                sim.IClimCyc = sim.ICstore(1,:);
                 sim.Period = Period(1);
                 
                 sim.StopSim = 1;
