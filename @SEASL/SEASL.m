@@ -93,7 +93,7 @@ classdef SEASL < handle & matlab.mixin.Copyable
                          x = q(:,3);
                          y = 2*Mod.cart_wheel_radius+Mod.cart_height-Mod.cart_width/2;
                         
-                    case 'tance_hit_track'
+                    case 'stance_hit_track'
 
                          x = q(:,3);
                          theta = q(:,1);
@@ -208,7 +208,7 @@ classdef SEASL < handle & matlab.mixin.Copyable
 
                     case  'stance' 
 
-                         x = Mod.x0-Mod.Leg_params.stance_length*sin(q(1));
+                         x = Mod.x0-Mod.Leg_params.stance_length*sin(q(:,1));
                          y = Mod.cart_height/2;
                          
                     otherwise
@@ -473,24 +473,22 @@ classdef SEASL < handle & matlab.mixin.Copyable
 
                 case 2 % Event #2 - hip hits track limit at stance phase:
                     
+%                     [x , ~] = Mod.GetPos(Xa,'hip');
+%                     [dx, ~] = Mod.GetVel(Xa,'hip');  
+%                         
+%                       Xa(3) = x;
+%                       Xa(4) = dx;
+                        
                     if Mod.ShortenReflexOn
-                        
-                        [x , ~] = Mod.GetPos(Xa,'hip');
-                        [dx, ~] = Mod.GetVel(Xa,'hip');
-                        
-                        
+
                         Mod.leg_length = Mod.Leg_params.swing_length;
                         Mod.Phase = 'swing';
                         Mod.LinearMotor = 'in';
                         
-
-                        Xa(3) = x;
-                        Xa(4) = dx;
-                        
                     else
                         
-                        Xa(2) = 0;
-                        Mod.Phase = 'stance_hit_track'; 
+                      %  Xa(2) = 0;
+                      %  Mod.Phase = 'stance_hit_track'; 
                         
                     end
 
@@ -498,11 +496,9 @@ classdef SEASL < handle & matlab.mixin.Copyable
                     
                 case 3 % Event #3 - max height to open leg:
                     
-                  if Mod.ExtendReflexOn 
-                      
-                    Mod.LinearMotor = 'out';
-                      
-                  end
+                    if Mod.ExtendReflexOn     
+                        Mod.LinearMotor = 'out';  
+                    end
        
 %                          Mod.Phase = 'stance';
 %                          theta = Xb(1);

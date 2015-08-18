@@ -46,10 +46,10 @@ classdef Simulation < handle & matlab.mixin.Copyable
         
         StepsTaken;
         EventsCounter = 0; 
-        ICstore; nICsStored = 10;
+        ICstore; nICsStored = 5;
         minDiff = 1e-8; % Min. difference for LC convergence
 
-        stepsReq = 10; % Steps of minDiff required for convergence
+        stepsReq = 5; % Steps of minDiff required for convergence
         stepsSS; % Steps taken since minDiff
         
         
@@ -85,6 +85,8 @@ classdef Simulation < handle & matlab.mixin.Copyable
         Colors = {[1 0 0],[0 0 1],[0 1 0],[0 0 0]};
         
         VideoWriterObj;
+        
+        DebugMode = 0;
     end
     
     methods
@@ -297,6 +299,13 @@ classdef Simulation < handle & matlab.mixin.Copyable
            if ~isempty(IE)
             
                Sim.EventsCounter = Sim.EventsCounter+1;
+
+                   if sum(isnan(YE(end,:))) 
+                       [  x , ~ ] = Sim.Mod.GetPos( YE(end,:), 'cart');
+                       [ dx , ~ ] = Sim.Mod.GetVel( YE(end,:), 'cart');
+                       YE(end,3) = x;
+                       YE(end,4) = dx;
+                   end
 
                Sim.Out.EventsVec.Type{Sim.EventsCounter} = IE(end);
                Sim.Out.EventsVec.Time{Sim.EventsCounter} = TE(end);

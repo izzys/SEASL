@@ -96,13 +96,13 @@ function [] = Render(Sim,t,X,flag)
         % Update convergence display
         Period = find(Sim.stepsSS>0,1,'first');
         if ~isempty(Period)
-            diff = norm(Sim.ICstore(Sim.indICtoCheck,1) - Sim.ICstore(Sim.indICtoCheck,1+Period));
+            diff = norm(Sim.ICstore(1,Sim.indICtoCheck) - Sim.ICstore(1+Period,Sim.indICtoCheck));
             set(Sim.hConv,'string',...
                 sprintf(Sim.ConvStr,diff,int2str(Period)),...
                     'backgroundcolor',[0.5 1 0.5]);
         else
             
-            diff = norm(Sim.ICstore(Sim.indICtoCheck,1) - Sim.ICstore(Sim.indICtoCheck,2));
+            diff = norm(Sim.ICstore(1,Sim.indICtoCheck) - Sim.ICstore(2,Sim.indICtoCheck));
             set(Sim.hConv,'string',...
                 sprintf(Sim.ConvStr,diff,'-'),...
                     'backgroundcolor',get(gca,'color'));

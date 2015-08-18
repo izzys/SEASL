@@ -18,9 +18,10 @@ else
                 Con.Period = value; 
             case 'tau'
                 Con.tau = value; 
-            case 'phi'
-                Con.phi = value; 
-
+            case 'phi_tau'
+                Con.phi_tau = value; 
+            case 'phi_reflex'
+                Con.phi_reflex = value; 
 
             otherwise
                 error(['Set failed: ',key,' property not found']);

@@ -5,37 +5,35 @@ Sim = Simulation();
 Sim.Graphics = 1;
 %1: number of steps, 2: covergance
 Sim.EndCond = 2;
-Sim = Sim.SetTime(0,0.008,100);
+Sim = Sim.SetTime(0,0.02,100);
 
 % Set up the model:
-Sim.Mod = Sim.Mod.Set('Phase','swing','LinearMotor','in');
-Sim.Mod.ShortenReflexOn = 1;
-Sim.Mod.ExtendReflexOn = 1;
-%Sim.Mod = Sim.Mod.Set('Phase','swing','LinearMotor','out');
+Sim.Mod = Sim.Mod.Set('Phase','stance','LinearMotor','out');
 
-% Init controller:
-Sim.Con = Sim.Con.Set('Period',1.2,'phi',[0.1 0.25 0.4 0.99],'tau',[2 -0.9]); 
+% Init controller:                                                                          short  extend
+Sim.Con = Sim.Con.Set('Period',1.2,'phi_tau',[0.1 0.25 0.4 0.99],'tau',[2 -3],'phi_reflex',[ 0.9   NaN  ]); 
 Sim.Con.Controller_Type = 'CPG';
-Sim.Con.IC =   0;% 0.7598157113686;%[1;0;Sim.Con.omega0;1;0;];
+Sim.Con.IC =  0.718629453138436; %all reflex LC
+Sim.Con.IC =  0.711880736600654; %extend reflex LC
+
 Sim.Con.Init();
 
-% Simulate:
-%Sim.Mod.IC = 1.0e+02 *[ 0.003593912104280 -0.036910752740697  0   0.031097309184038]'; % LC
-
 % note that if IC match the stance phase - only the first two IC count:
-
-Sim.Mod.IC =  [  -0.3 2 0 3];
-
+Sim.Mod.IC =  [  0.359391210428054 -3.578743845550021 NaN NaN]; %all reflex LC
+Sim.Mod.IC =  [  0.359391210428062 -3.537893670232675 NaN NaN]; %extend reflex LC
 
 Sim = Sim.Init();
 
+% Simulate:
 % Sim.VideoWriterObj = VideoWriter('SEASL_simulation.avi');
 % open(Sim.VideoWriterObj);
+
+Sim.DebugMode = 0;
 Sim = Sim.Run();
 % close(Sim.VideoWriterObj);
 
 if Sim.Out.Type == Sim.EndFlag_Converged
-Sim.PMeps = 1e-7;
+Sim.PMeps = 1e-3;
 [EigVal,EigVec] = Sim.Poincare();
 EigVal
 end
