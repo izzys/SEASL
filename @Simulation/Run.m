@@ -67,7 +67,7 @@ end
                     case 1 %check only 1 stance phase for each period
                         Sim.stance_counter = Sim.stance_counter+1;
 
-                        StepDone = 1;
+                         StepDone = 1;
 %                         if Sim.stance_counter>1
 %                             Sim.Out.Type = Sim.EndFlag_MoreThanOneStance;
 %                             Sim.Out.Text = 'More than 1 stance phase for period';
@@ -76,7 +76,7 @@ end
 
                     case 2  %check that leg hits track only if theta>0 
                                             
-
+% 
                         if Xa(1)>0
                             Sim.Out.Type = Sim.EndFlag_NoSignChange;
                             Sim.Out.Text = 'Leg hits track when theta>0';
@@ -109,7 +109,7 @@ end
                 if ConEvID==1
 
                     
-%                         % check change in sign at stance phase:
+                        % check change in sign at stance phase:
 %                         ind_impact = find(cell2mat(Sim.Out.EventsVec.Type)==1,1,'last');
 % 
 %                         if ~isempty(ind_impact)
@@ -146,12 +146,12 @@ end
                     Sim.Con.Linear_motor_out = 0;
                     Sim.Mod.LinearMotor = 'out';
                     
-                    [ ~, y_ankle ] = Sim.Mod.GetPos(Xa, 'ankle');
-                    if (y_ankle+1e-8)<Sim.Mod.ankle_radius
-                        Sim.Out.Type = Sim.EndFlag_LegHitsGroundDuringExtend;
-                        Sim.Out.Text ='foot penetrates ground during extend';
-                        Sim.StopSim = 1;
-                    end
+%                     [ ~, y_ankle ] = Sim.Mod.GetPos(Xa, 'ankle');
+%                     if (y_ankle+1e-8)<Sim.Mod.ankle_radius
+%                         Sim.Out.Type = Sim.EndFlag_LegHitsGroundDuringExtend;
+%                         Sim.Out.Text ='foot penetrates ground during extend';
+%                         Sim.StopSim = 1;
+%                     end
                 end
 
             end

@@ -327,7 +327,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
             % make sure hip in track:
             [ ~, y_hip ] = GetPos(Sim.Mod, X, 'hip');
            
-            if (y_hip+1e-6)<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
+            if (y_hip+1e-8)<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
                % warning('Warning:  hip too low')
                  Sim.Out.Type = Sim.EndFlag_HipHitTrack;
                  Sim.Out.Text = 'Hip hit track';
