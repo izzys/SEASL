@@ -5,25 +5,21 @@ Sim = Simulation();
 Sim.Graphics = 1;
 %1: number of steps, 2: covergance
 Sim.EndCond = 2;
-Sim = Sim.SetTime(0,0.005,100);
+Sim = Sim.SetTime(0,0.05,100);
 
 % Set up the model:
 
 Sim.Mod = Sim.Mod.Set('Phase','stance','LinearMotor','out');
 
-% Init controller:                                                                          short  extend
-Sim.Con = Sim.Con.Set('Period',1.2,'phi_tau',[0.1 0.25 0.4 0.99],'tau',[2 -3],'phi_reflex',[ 0.9   NaN  ]); 
-
+% Init controller:                                                                                short          extend
+Sim.Con = Sim.Con.Set('Period',1.2,'phi_tau',[0.1 0.25 0.4 0.99],'tau',[2 -3],'phi_reflex',[ 0.897308852443590    0.5  ]); 
 Sim.Con.Controller_Type = 'CPG';
-Sim.Con.IC =  0.718629453138436; %all reflex LC
-Sim.Con.IC =  0.711880736600654; %extend reflex LC
+Sim.Con.IC = 0.710126001724011; % LC
 
 Sim.Con.Init();
 
-
 % note that if IC match the stance phase - only the first two IC count:
-Sim.Mod.IC =  [  0.359391210428054 -3.578743845550021 NaN NaN]; %all reflex LC
-Sim.Mod.IC =  [  0.359391210428062 -3.537893670232675 NaN NaN]; %extend reflex LC
+ Sim.Mod.IC =   [ 0.359391210427136  -3.525464278857524  NaN NaN]; % LC
 
 Sim = Sim.Init();
 
