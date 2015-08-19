@@ -4,14 +4,14 @@ Simh = deepcopy(Sim);
 
 
 % Set up the model:
-Simh.Mod = Simh.Mod.Set('Phase','swing','LinearMotor','in');
+Simh.Mod = Simh.Mod.Set('Phase','stance','LinearMotor','out');
 
 % Init controller:
-Simh.Con.IC = 0;
+Simh.Con.IC = dIC(2);
 Simh.Con.Init();
 
-% Set IC and init
-Simh.Mod.IC = [dIC(1) , dIC(2) , 0 , dIC(3)]';
+% Set IC and init 
+Simh.Mod.IC = [Sim.IClimCyc(1)  dIC(1)  NaN   NaN ];
 try
 Simh = Simh.Init();
 catch init_err
@@ -28,7 +28,7 @@ catch sim_err
     return
 end
 out_type = Simh.Out.Type;
-IC_mapped = Simh.ICstore([1 2 4]',1);
+IC_mapped = Simh.ICstore(1,[ 2 5]);
 
     if out_type ~= 1 %make sure to fix end_condition flag to 1 (path ) or 2  (full)!!!
             IC_mapped = [NaN NaN NaN]';
