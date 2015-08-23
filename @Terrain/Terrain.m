@@ -1,10 +1,8 @@
 classdef Terrain < handle & matlab.mixin.Copyable
     % Version 0.3 - 24/04/2014
-    % added disturbances by Izzy. 23/8/15
     
     % Different terrains: inclined plane, sinusoidal
-    %                     infinite parabolla, finite parabolla ,
-    %                     disturbances
+    %                     infinite parabolla, finite parabolla
     
     properties
         Type=0;
@@ -12,7 +10,6 @@ classdef Terrain < handle & matlab.mixin.Copyable
         % 1 - sinusoidal
         % 2 - infinite parabolla
         % 3 - finite parabolla
-        % 4 - disturbances
         
         % Sine terrain params
         sinAmp=0.1;
@@ -31,17 +28,10 @@ classdef Terrain < handle & matlab.mixin.Copyable
         end_x=0;
         end_y=0;
         
-        % Disturbance params
-        DisturbanceMaxHeight;
-        DisturbanceSign;
-        DisturbanceDensity;
-        
-        
         % Set keys
         SetKeys = {'Type','sinAmp','sinFreq','parK','start_slope',...
             'end_slope','start_x','end_x','start_y','end_y',...
-            'FloorStep','VertLines','FloorColor','LineWidth','DisturbanceMaxHeight',...
-            'DisturbanceSign','DisturbanceDensity'};
+            'FloorStep','VertLines','FloorColor','LineWidth'};
         
         % Render parameters
         FloorStep=0.05;
@@ -94,11 +84,6 @@ classdef Terrain < handle & matlab.mixin.Copyable
             Te=SetEndConditions(Te);
         end
         
-        function [Te,FloorX,FloorY] = Init(Te,Min,Max)
-            FloorX=Min:Te.FloorStep:Max;
-            FloorY = zeros(size(FloorX)); 
-        end
-        
         function [Te] = SetEndConditions(Te)
             if Te.Type==2
                 % For the inifinite parabolla, set the incline
@@ -134,7 +119,6 @@ classdef Terrain < handle & matlab.mixin.Copyable
         end
         
         function [y, Trans] = Surf(Te,x)
-
             if length(x)>1
                 ID1 = find(x>=Te.start_x,1,'first');
                 ID2 = find(x>=Te.end_x,1,'first');
@@ -161,10 +145,6 @@ classdef Terrain < handle & matlab.mixin.Copyable
                         [y1, ~] = Te.Surf3(x(1:ID1-1));
                         [y2, ~] = Te.Surf3(x(ID1:ID2-1));
                         [y3, ~] = Te.Surf3(x(ID2:end));
-                    case 4
-                        [y1, ~] = Te.Surf4(x(1:ID1-1));
-                        [y2, ~] = Te.Surf4(x(ID1:ID2-1));
-                        [y3, ~] = Te.Surf4(x(ID2:end));
                 end
                 y = [y1,y2,y3];
                 Trans=[];
@@ -178,8 +158,6 @@ classdef Terrain < handle & matlab.mixin.Copyable
                         [y,Trans] = Te.Surf2(x);
                     case 3
                         [y,Trans] = Te.Surf3(x);
-                    case 4
-                        [y,Trans] = Te.Surf4(x);
                 end
             end
         end
@@ -194,8 +172,6 @@ classdef Terrain < handle & matlab.mixin.Copyable
                     alpha = Te.SurfSlope2(x);
                 case 3
                     alpha = Te.SurfSlope3(x);
-                case 4
-                    alpha = Te.SurfSlope4(x);
             end
         end
         
@@ -270,7 +246,7 @@ classdef Terrain < handle & matlab.mixin.Copyable
             Trans=[cos(alpha), -sin(alpha);
                    sin(alpha), cos(alpha)];
         end
-        
+
         function [alpha]=SurfSlope3(Te,x)
             if x<Te.start_x
                 alpha=Te.start_slope*pi/180;
@@ -282,34 +258,6 @@ classdef Terrain < handle & matlab.mixin.Copyable
                 end
             end
         end
-        
-% %%%%%%%%%%%% Type 4 - disturbances %%%%%%%%%%%%
-        function [y, Trans] = Surf4(Te,x)
-            
-            alpha = Te.SurfSlope(x);
-            Trans=[cos(alpha), -sin(alpha);
-                   sin(alpha), cos(alpha)];
-               
-             d= Te.DisturbanceMaxHeight;
-             sign = Te.DisturbanceSign;
-             %Te.DisturbanceDensity;
-             disturbance = sign*d;
-            
-            if x<Te.start_x
-              y=Te.start_y+x*tand(Te.start_slope);
-            else
-                if x<Te.end_x
-                    y=Te.start_y+x*tand(Te.start_slope)+disturbance;
-                else
-                    y=Te.start_y+x*tand(Te.start_slope);
-                end
-            end
-       end
-        
-        function [alpha]=SurfSlope4(Te,x) %#ok<INUSD>
-            alpha=Te.start_slope*pi/180;
-        end
-
         
         % %%%%% Rendering function in Render.m %%%%%
     end

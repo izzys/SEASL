@@ -1,5 +1,5 @@
 % %%%%%%%%%%%% Rendering function %%%%%%%%%%%%
-function [Te,FloorX,FloorY]=Render(Te,Min,Max)
+function [Te]=Render(Te,Min,Max)
     FloorX=Min:Te.FloorStep:Max;
     VLStep=(Max-Min)/(Te.VertLines);
 
