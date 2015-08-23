@@ -9,7 +9,6 @@ Sim.EndCond = 2;
 
 Sim = Sim.SetTime(0,0.02,100);
 
-
 % Set up the model:
 Sim.Mod = Sim.Mod.Set('Phase','stance','LinearMotor','out');
 
