@@ -28,6 +28,7 @@ Sim.Con.IC = Sim.IClimCyc(5); % LC
 Sim.Con.Init();
 
 % note that if IC match the stance phase - only the first two IC count:
+
 Sim.Mod.IC =  [  0.359391210428054 -3.578743845550021 NaN NaN]; %all reflex LC
 Sim.Mod.IC =  [  0.359391210428062 -3.537893670232675 NaN NaN]; %extend reflex LC
 
