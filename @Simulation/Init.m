@@ -10,6 +10,7 @@ function [ Sim ] = Init( Sim )
     Sim.ModEv = 1:Sim.Mod.nEvents; % Model events indices
     Sim.ConEv = Sim.Mod.nEvents+1:Sim.nEvents; % Contr. events indices
     
+
     
     % Set linear motor - in/out:
     if Sim.Mod.IC(2)<=0 && Sim.Mod.IC(1)>0 
@@ -19,13 +20,16 @@ function [ Sim ] = Init( Sim )
         Sim.Mod.LinearMotor = 'in';
     end
 
+
     % check here if IC are ok !! 
     [ ~, y_hip ] = GetPos(Sim.Mod, Sim.Mod.IC, 'hip');
     if y_hip<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
         if strcmp(Sim.Mod.Phase ,'stance')
             Sim.Mod.Phase = 'swing';
+
 %             Sim.Mod.LinearMotor = 'in';
 %             warning('This is not proper walking!!!')
+
         else
             error('Error: wrong IC , hip too low')
         end
@@ -33,6 +37,7 @@ function [ Sim ] = Init( Sim )
     end
     [ ~, y_ankle ] = GetPos(Sim.Mod, Sim.Mod.IC, 'ankle');
     if y_ankle<Sim.Mod.ankle_radius
+
           if strcmp(Sim.Mod.Phase ,'swing')
              Sim.Mod.Phase = 'stance';
           else
@@ -46,7 +51,6 @@ function [ Sim ] = Init( Sim )
     end
     
 
-    
 
     % init model:
     if strcmp(Sim.Mod.LinearMotor , 'out')
@@ -58,12 +62,14 @@ function [ Sim ] = Init( Sim )
     end
     
     
+
 %     if strcmp(Sim.Mod.Phase,'stance')
 %         theta = Sim.Mod.IC(1);  
 %         l = Sim.Mod.Leg_params.stance_length;
 %         x_cart  = -l*sin(theta)  ;
 %         
 %         Sim.Mod.x0 = x_cart+l*sin(theta);
+
 %     end
     
 %     if strcmp(Sim.Con.Controller_Type,'Hopf_adaptive') && Sim.Con.NumOfNeurons>1
@@ -108,11 +114,13 @@ function [ Sim ] = Init( Sim )
     Sim.Mod.Ankle_Torque = 0; 
     
     % if shorten is by reflex - then dont short at end of period:
+
     Sim.Mod.ShortenReflexOn = isnan(Sim.Con.phi_reflex(1));
     Sim.Mod.ExtendReflexOn =  isnan(Sim.Con.phi_reflex(2));
     
-     Sim.Con.ShortenAtPhase  =  ~Sim.Mod.ShortenReflexOn ;
+   %  Sim.Con.ShortenAtPhase  =  ~Sim.Mod.ShortenReflexOn ;
 %     Sim.Con.ExtendAtPhase =  ~Sim.Mod.ShortenReflexOn ;
+
     
     % counters:
     Sim.stance_counter = 0;

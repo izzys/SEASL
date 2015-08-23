@@ -21,14 +21,12 @@ function [ Sim ] = Run( Sim )
     end
     
     % Save state and time
-    
     if strcmp(Sim.Mod.Phase, 'stance')
         [XTemp(:,3) , ~] = Sim.Mod.GetPos(XTemp,'cart'); 
         [XTemp(:,4) , ~] = Sim.Mod.GetVel(XTemp,'cart');  
     end
     X = [X; XTemp];
     Sim.Out.T = [Sim.Out.T; TTemp];
-    Sim.RecordEvents(TE,YE,IE);
     
     while TimeCond && Sim.StopSim == 0
         
@@ -44,6 +42,7 @@ disp('=====================')
 pause
 end
 % ~~ %%%%%%%%% for debugging %%%%%%%%%%  ~~   
+
 
         StepDone = 0;
         Xa = XTemp(end,:);
@@ -65,7 +64,8 @@ end
                     
                     case 1 %check only 1 stance phase for each period
                         Sim.stance_counter = Sim.stance_counter+1;
-                        StepDone = 1;
+
+                         StepDone = 1;
 %                         if Sim.stance_counter>1
 %                             Sim.Out.Type = Sim.EndFlag_MoreThanOneStance;
 %                             Sim.Out.Text = 'More than 1 stance phase for period';
@@ -73,11 +73,13 @@ end
 %                         end
 
                     case 2  %check that leg hits track only if theta>0 
-                                            
+
                         if Xa(1)>0
                             Sim.Out.Type = Sim.EndFlag_NoSignChange;
                             Sim.Out.Text = 'Leg hits track when theta>0';
                             Sim.StopSim = 1;
+
+
                         end
 
                     case 3 % check that foot does not extend into ground
@@ -87,9 +89,11 @@ end
                             Sim.Out.Type = Sim.EndFlag_LegHitsGroundDuringExtend;
                             Sim.Out.Text =' foot penetrates ground during extend';
                             Sim.StopSim = 1;
+
                         end
                 end
                
+
             end
 
             % Is it a controller event?
@@ -99,10 +103,8 @@ end
                 [Sim.Con,Xa(Sim.ConCo)] = ...
                     Sim.Con.HandleEvent(ConEvID, XTemp(end,Sim.ConCo),TTemp(end));
                               
-                if ConEvID==1
-
-                    
-%                         % check change in sign at stance phase:
+%               if ConEvID==1             
+                        % check change in sign at stance phase:
 %                         ind_impact = find(cell2mat(Sim.Out.EventsVec.Type)==1,1,'last');
 % 
 %                         if ~isempty(ind_impact)
@@ -116,9 +118,8 @@ end
 %                                  Sim.StopSim = 1;
 %                             end
 % 
-%                         end
-                
-                end
+%                         end               
+%                end
                             
                 if Sim.Con.Linear_motor_in
                     
@@ -148,17 +149,23 @@ end
                 end
 
             end
+         
+        Sim.RecordEvents(TE(ev),YE(ev,:),IE(ev),Xa);    
             
         end
-       
+        
+        
         Sim.IC = Xa;
         
         if StepDone
+                        
             Sim.ICstore(2:end,:) = Sim.ICstore(1:end-1,:);
             Sim.ICstore(1,:) = Sim.IC;
             Sim.StepsTaken = Sim.StepsTaken+1;
+
             Sim = Sim.CheckConvergence();
             Sim.Out.PoincareSection(:,Sim.StepsTaken) = Sim.IC;
+
             Sim.stance_counter = 0;
         end
         
@@ -197,10 +204,10 @@ end
              [XTemp(:,3) , ~] = Sim.Mod.GetPos(XTemp,'cart'); 
              [XTemp(:,4) , ~] = Sim.Mod.GetVel(XTemp,'cart');  
         end
-        
+
         X = [X; XTemp];%#ok<AGROW>
         Sim.Out.T = [Sim.Out.T; TTemp];
-        Sim.RecordEvents(TE,YE,IE);
+        
     end
     
     %for not stable IC:

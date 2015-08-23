@@ -31,6 +31,7 @@ classdef SEASL < handle & matlab.mixin.Copyable
         % reflexes:
         ExtendReflexOn;
         ShortenReflexOn;
+        TrackSwithcHeight = 0.01;
         
         % Render parameters:
         hip_radius = 0.03;
@@ -372,7 +373,6 @@ classdef SEASL < handle & matlab.mixin.Copyable
                     G4 = (c_hip+c_ankle+c_floor*l^2*cos(theta)^2+c_track*l^2*sin(theta)^2)*dtheta;
                     tau = T_hip+T_ankle;
                     
-
                     dq(1) = q(2);
                     dq(2) = 1/M*(G1-G2+G3-G4+tau);
                     
@@ -380,7 +380,6 @@ classdef SEASL < handle & matlab.mixin.Copyable
                     dq(4) = NaN;%l*sin(theta)*dtheta^2-l*cos(theta)*dtheta;   
                     
                 case 'stance_hit_track'
-                    
                     
                     c_sole = Mod.Leg_params.c_sole;
                     c_floor = Mod.Cart_params.c_floor;
@@ -390,7 +389,7 @@ classdef SEASL < handle & matlab.mixin.Copyable
                    % if q(4)<0.2
                  %   c_sole=c_sole*100;
                   %  end
-                    
+ 
                     dq(1) = 0;
                     dq(2) = 0;    
                     dq(3) = q(4); 
@@ -419,10 +418,10 @@ classdef SEASL < handle & matlab.mixin.Copyable
                 direction(1) = -1;   
             end
             
-            % Event #2 - hip hits track limit at stance phase:
+            % Event #2 - hip hits track switch at stance phase:
             if strcmp(Mod.Phase,'stance')
                 [~,y_hip] = Mod.GetPos(X,'hip');
-                value(2) = y_hip+1e-8-2*Mod.cart_wheel_radius - Mod.cart_height+Mod.cart_width/2;
+                value(2) = y_hip-2*Mod.cart_wheel_radius - Mod.cart_height+Mod.cart_width/2 - Mod.TrackSwithcHeight;
                 isterminal(2) = 1;
                 direction(2) = -1;                                 
             end  
@@ -471,7 +470,8 @@ classdef SEASL < handle & matlab.mixin.Copyable
                     Mod.x0 = Xb(3)+l*sin(theta);
                     
 
-                case 2 % Event #2 - hip hits track limit at stance phase:
+                case 2 % Event #2 - hip hits track switch at stance phase:
+
                     
 %                     [x , ~] = Mod.GetPos(Xa,'hip');
 %                     [dx, ~] = Mod.GetVel(Xa,'hip');  
@@ -487,9 +487,9 @@ classdef SEASL < handle & matlab.mixin.Copyable
                         
                     else
                         
-                      %  Xa(2) = 0;
-                      %  Mod.Phase = 'stance_hit_track'; 
-                        
+                   %     Xa(2) = 0;
+                   %     Mod.Phase = 'stance_hit_track'; 
+                       
                     end
 
 
@@ -499,15 +499,18 @@ classdef SEASL < handle & matlab.mixin.Copyable
                     if Mod.ExtendReflexOn     
                         Mod.LinearMotor = 'out';  
                     end
+
        
 %                          Mod.Phase = 'stance';
 %                          theta = Xb(1);
 %                          l = Mod.Leg_params.stance_length;
 %                          Mod.x0 = Xb(3)+l*sin(theta);
 %                          Xa(4) = 0;
+
                 otherwise
                      
                      error('Error: Model event not handled.')
+
 
             end
 
