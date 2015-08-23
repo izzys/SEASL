@@ -437,9 +437,9 @@ classdef SEASL < handle & matlab.mixin.Copyable
             
             % Event #2 - hip hits track switch at stance phase:
             if strcmp(Mod.Phase,'stance')
-                [x_ankle,y_hip] = Mod.GetPos(X,'hip');
-                ind = find(x_ankle<=Mod.Env_params.FloorX,1,'first');
-                FloorY = Mod.Env_params.FloorY( ind );
+                [x_ankle,y_hip] = Mod.GetPos(X,'hip')
+                ind = find(x_ankle<=Mod.Env_params.FloorX,1,'first')
+                FloorY = Mod.Env_params.FloorY( ind )
                 value(2) = y_hip-2*Mod.cart_wheel_radius-FloorY-Mod.cart_height+Mod.cart_width/2-Mod.TrackSwithcHeight;
                 isterminal(2) = 1;
                 direction(2) = -1;                                 
