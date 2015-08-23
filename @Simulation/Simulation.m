@@ -337,9 +337,10 @@ classdef Simulation < handle & matlab.mixin.Copyable
            
             if (y_hip+1e-8)<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
                % warning('Warning:  hip too low')
-               %  Sim.Out.Type = Sim.EndFlag_HipHitTrack;
-                 error('Error: Hip hit track');
-               %  Sim.StopSim = 1;
+                 Sim.Out.Type = Sim.EndFlag_HipHitTrack;
+                 Sim.Out.Text = 'Hip hit track.';
+              %   error('Error: Hip hit track');
+                 Sim.StopSim = 1;
             end
             
              % make sure leg does not penetrate ground:

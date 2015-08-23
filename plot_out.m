@@ -59,7 +59,7 @@ end
 ind_event4 = find(cell2mat(Sim.Out.EventsVec.Type)==4);
 Event4_time = EventsTime(ind_event4);
 Event4_state = EventsX(ind_event4,:);
-Event4_sym = '*k';
+Event4_sym = '*b';
 if ~isempty(ind_event4)
     Legend4 = 'Event4 - new phase';
 else
@@ -189,9 +189,11 @@ xlabel('\theta')
 ylabel('d\theta')
 zlabel('\phi')
 
-figure(2)
+figure(1)
 hold on
-plot(Poincare_state(1,2),Poincare_state(1,5),Poincare_sym,'MarkerSize',10,'LineWidth',2)
-
-
+dtheta(1) 
+dtheta(1) 
+plot([ dtheta(1) ],[phase(1) ],Poincare_sym,'MarkerSize',10,'LineWidth',2)
+%plot([  Poincare_state(:,2)],[ Poincare_state(:,5)],Poincare_sym,'MarkerSize',10,'LineWidth',2)
+drawnow
 end

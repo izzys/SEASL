@@ -4,7 +4,7 @@ set(0,'DefaultFigureWindowStyle','normal')
 Sim = Simulation();
 Sim.Graphics = 1;
 %1: number of steps, 2: covergance
-Sim.EndCond = 2;
+Sim.EndCond = [1,1];
 Sim = Sim.SetTime(0,0.05,100);
 
 % Set up the model:
@@ -19,19 +19,17 @@ Sim.Con.Controller_Type = 'CPG';
 Sim.IClimCyc = [ 0.359391210427835  -3.525464278622958  0   2.970203654740103   0.710126001714929] ;
 
 Sim.Con.IC = Sim.IClimCyc(5); % LC
-%Sim.Con.IC = 0.716447551928501;
 
+for i = 10:16
+    
 Sim.Con.Init();
 
 % note that if IC match the stance phase - only the first two IC count:
 Sim.Mod.IC =   Sim.IClimCyc(1:4); % LC
 
 % add disturbance:
-Sim.Mod.IC(1) =   Sim.Mod.IC(1)-0.019; % LC
-% 
-%  Sim.Mod.IC(2) = -3.608550162705431;
-%  Sim.Mod.IC(4) =  3.040203512079326; 
 
+Sim.Mod.IC(1) =  Sim.Mod.IC(1)-0.001*i;%-2.056; 
 
 Sim = Sim.Init();
 
@@ -50,3 +48,5 @@ EigVal
 end
 
 plot_out(Sim);
+
+end
