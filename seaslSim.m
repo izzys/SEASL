@@ -6,7 +6,13 @@ Sim.Graphics = 1;
 %1: number of steps, 2: covergance
 
 Sim.EndCond = 2;
-Sim = Sim.SetTime(0,0.05,100);
+Sim = Sim.SetTime(0,0.02,100);
+
+% set terrain:
+Sim.Env.DisturbanceMaxHeight = 0.05;
+Sim.Env.DisturbanceSign = 1;
+Sim.Env.start_x = 10;
+Sim.Env.end_x = 15;
 
 % Set up the model:
 
@@ -23,17 +29,14 @@ Sim.IClimCyc = [ 0.359391210427835  -3.525464278622958  0   2.970203654740103   
 
 Sim.Con.IC = Sim.IClimCyc(5); % LC
 
-for i = 10:16
     
 Sim.Con.Init();
 
 % note that if IC match the stance phase - only the first two IC count:
-
 Sim.Mod.IC =   Sim.IClimCyc(1:4); % LC
 
 % add disturbance:
-
-Sim.Mod.IC(1) =  Sim.Mod.IC(1)-0.001*i;%-2.056; 
+Sim.Mod.IC(1) =  Sim.Mod.IC(1);%-2.056; 
 
 
 Sim = Sim.Init();
@@ -54,4 +57,4 @@ end
 
 plot_out(Sim);
 
-end
+
