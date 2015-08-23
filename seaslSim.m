@@ -6,17 +6,13 @@ Sim.Graphics = 1;
 %1: number of steps, 2: covergance
 
 Sim.EndCond = 2;
-Sim = Sim.SetTime(0,0.01,100);
 
-% set terrain:
-Sim.Env.DisturbanceMaxHeight = 0.03;
-Sim.Env.DisturbanceSign = 1;
-Sim.Env.start_x = 2;
-Sim.Env.end_x = 4;
+Sim = Sim.SetTime(0,0.02,100);
+
 
 % Set up the model:
-
 Sim.Mod = Sim.Mod.Set('Phase','stance','LinearMotor','out');
+
 
 
 % Init controller:                                                                    short             extend
@@ -27,6 +23,7 @@ Sim.Con = Sim.Con.Set('Period',1.2,'phi_tau',[0.1 0.25 0.4 0.99],'tau',[2 -3],..
 Sim.Con.Controller_Type = 'CPG';
 
 
+
 Sim.IClimCyc = [ 0.359391210427835  -3.525464278622958  0   2.970203654740103   0.710126001714929] ;
 
 Sim.Con.IC = Sim.IClimCyc(5); % LC
@@ -35,11 +32,10 @@ Sim.Con.IC = Sim.IClimCyc(5); % LC
 Sim.Con.Init();
 
 % note that if IC match the stance phase - only the first two IC count:
-Sim.Mod.IC =   Sim.IClimCyc(1:4); % LC
 
-% add disturbance:
-Sim.Mod.IC(1) =  Sim.Mod.IC(1);%-2.056; 
-%Sim.Mod.IC(2) = -3.505; 
+Sim.Mod.IC =  [  0.359391210428054 -3.578743845550021 NaN NaN]; %all reflex LC
+Sim.Mod.IC =  [  0.359391210428062 -3.537893670232675 NaN NaN]; %extend reflex LC
+
 
 Sim = Sim.Init();
 
