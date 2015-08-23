@@ -23,7 +23,6 @@ Sim.IClimCyc = [ 0.359391210427835  -3.525464278622958  0   2.970203654740103   
 
 Sim.Con.IC = Sim.IClimCyc(5); % LC
 
-for i = 10:16
     
 Sim.Con.Init();
 
@@ -32,8 +31,7 @@ Sim.Con.Init();
 Sim.Mod.IC =   Sim.IClimCyc(1:4); % LC
 
 % add disturbance:
-
-Sim.Mod.IC(1) =  Sim.Mod.IC(1)-0.001*i;%-2.056; 
+Sim.Mod.IC(1) =  Sim.Mod.IC(1)-0.001;%-2.056; 
 
 
 Sim = Sim.Init();
@@ -54,4 +52,4 @@ end
 
 plot_out(Sim);
 
-end
+
