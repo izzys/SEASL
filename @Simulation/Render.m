@@ -14,7 +14,7 @@ function [] = Render(Sim,t,X,flag)
                             Sim.FigWidth Sim.FigHeight]);
                     end
                 else
-                    Sim.Fig = figure();
+                    Sim.Fig = figure(325);
                     % Make window larger
                     set(Sim.Fig,'Position', [100 200,...
                         Sim.FigWidth Sim.FigHeight]);

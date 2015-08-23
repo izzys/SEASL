@@ -389,7 +389,7 @@ classdef SEASL < handle & matlab.mixin.Copyable
                    % if q(4)<0.2
                  %   c_sole=c_sole*100;
                   %  end
-                    
+ 
                     dq(1) = 0;
                     dq(2) = 0;    
                     dq(3) = q(4); 
@@ -484,12 +484,12 @@ classdef SEASL < handle & matlab.mixin.Copyable
                         Mod.leg_length = Mod.Leg_params.swing_length;
                         Mod.Phase = 'swing';
                         Mod.LinearMotor = 'in';
-                        here = 1
+                        
                     else
                         
                    %     Xa(2) = 0;
-                        Mod.Phase = 'stance_hit_track'; 
-                        
+                   %     Mod.Phase = 'stance_hit_track'; 
+                       
                     end
 
 

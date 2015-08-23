@@ -5,6 +5,11 @@ CM = -1*ones(nX-1,nY-1);
 %%
 ind0 = GetCell2D([Sim.IClimCyc(2);Sim.IClimCyc(5)],x_range,y_range);
 CM(ind0(1),ind0(2)) = 1;
+
+       % ic = PointFromCell([ind0(1),ind0(2)],x_range,y_range)
+
+
+
 % -1 - not assigned 
 % 1 - converge
 % 0 - diverge

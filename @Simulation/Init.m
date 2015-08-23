@@ -118,7 +118,7 @@ function [ Sim ] = Init( Sim )
     Sim.Mod.ShortenReflexOn = isnan(Sim.Con.phi_reflex(1));
     Sim.Mod.ExtendReflexOn =  isnan(Sim.Con.phi_reflex(2));
     
-     Sim.Con.ShortenAtPhase  =  ~Sim.Mod.ShortenReflexOn ;
+   %  Sim.Con.ShortenAtPhase  =  ~Sim.Mod.ShortenReflexOn ;
 %     Sim.Con.ExtendAtPhase =  ~Sim.Mod.ShortenReflexOn ;
 
     

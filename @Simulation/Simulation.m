@@ -296,7 +296,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
             end
         end
         
-        function [] = RecordEvents(Sim,TE,YE,IE)
+        function [] = RecordEvents(Sim,TE,YE,IE,Xa)
             
            if ~isempty(IE)
             
@@ -308,11 +308,19 @@ classdef Simulation < handle & matlab.mixin.Copyable
                        YE(end,3) = x;
                        YE(end,4) = dx;
                    end
-
+                   
+                   
+                   if sum(isnan(Xa)) 
+                       [x_a , ~] = Sim.Mod.GetPos(Xa(end,:),'cart'); 
+                       [dx_a , ~] = Sim.Mod.GetVel(Xa(end,:),'cart');  
+                       Xa(3) = x_a;
+                       Xa(4) = dx_a;
+                   end
+                   
                Sim.Out.EventsVec.Type{Sim.EventsCounter} = IE(end);
                Sim.Out.EventsVec.Time{Sim.EventsCounter} = TE(end);
                Sim.Out.EventsVec.State{Sim.EventsCounter} = YE(end,:);
-           
+               Sim.Out.EventsVec.Xa{Sim.EventsCounter} = Xa(end,:);
            end
 
         end
@@ -329,16 +337,15 @@ classdef Simulation < handle & matlab.mixin.Copyable
            
             if (y_hip+1e-8)<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
                % warning('Warning:  hip too low')
-                 Sim.Out.Type = Sim.EndFlag_HipHitTrack;
-                 Sim.Out.Text = 'Hip hit track';
-                 Sim.StopSim = 1;
+               %  Sim.Out.Type = Sim.EndFlag_HipHitTrack;
+                 error('Error: Hip hit track');
+               %  Sim.StopSim = 1;
             end
             
              % make sure leg does not penetrate ground:
             [ ~, y_ankle ] = GetPos(Sim.Mod, X, 'ankle');
-            if (y_ankle+1e-8)<Sim.Mod.ankle_radius
-                warning('Warning:  foot penetrates ground')
-                
+            if (y_ankle+1e-8)<Sim.Mod.ankle_radius     
+               error('Error: Foot penetrates ground')           
             end 
 
              % make sure ZMP is within support polygon:

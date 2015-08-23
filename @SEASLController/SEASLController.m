@@ -128,7 +128,7 @@ classdef SEASLController < handle & matlab.mixin.Copyable
         
         % Handle Events:
         function [NC,Xafter] = HandleEvent(NC, evID, Xbefore, t) %#ok<INUSD>
-            
+
             Xafter = Xbefore;
             switch evID
                 
