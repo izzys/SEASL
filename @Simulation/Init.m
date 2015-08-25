@@ -22,6 +22,7 @@ function [ Sim ] = Init( Sim )
 
 
     % check here if IC are ok !! 
+
     [ ~, y_hip ] = GetPos(Sim.Mod, Sim.Mod.IC, 'hip');
     if y_hip<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
         if strcmp(Sim.Mod.Phase ,'stance')
@@ -37,18 +38,19 @@ function [ Sim ] = Init( Sim )
     end
     [ ~, y_ankle ] = GetPos(Sim.Mod, Sim.Mod.IC, 'ankle');
     if y_ankle<Sim.Mod.ankle_radius
+
           if strcmp(Sim.Mod.Phase ,'swing')
              Sim.Mod.Phase = 'stance';
           else
              error('Error: wrong IC , foot penetrates ground')
           end
-
     end
     
     % Check Sim IC:
     if strcmp(Sim.Mod.Phase,'stance') && strcmp(Sim.Mod.LinearMotor,'in') 
         error('Error: contradicting starting position. Cannot be in start phase: stance, and linear motor: in')
     end
+    
 
 
     % init model:
@@ -61,12 +63,14 @@ function [ Sim ] = Init( Sim )
     end
     
     
+
 %     if strcmp(Sim.Mod.Phase,'stance')
 %         theta = Sim.Mod.IC(1);  
 %         l = Sim.Mod.Leg_params.stance_length;
 %         x_cart  = -l*sin(theta)  ;
 %         
 %         Sim.Mod.x0 = x_cart+l*sin(theta);
+
 %     end
     
 %     if strcmp(Sim.Con.Controller_Type,'Hopf_adaptive') && Sim.Con.NumOfNeurons>1
@@ -75,7 +79,6 @@ function [ Sim ] = Init( Sim )
 
     Sim.Mod.x0 = 0;
     Sim.IC = [Sim.Mod.IC ,  Sim.Con.IC];
-
     Sim.StopSim = 0;
     Sim.PauseSim = 0; 
     
@@ -105,18 +108,22 @@ function [ Sim ] = Init( Sim )
         Sim.FlMax = Sim.COMx0+1.5*Sim.AR*Sim.Mod.cart_length;
         Sim.HeightMin = Sim.COMy0-4/Sim.AR*Sim.Mod.cart_height;
         Sim.HeightMax = Sim.COMy0+4/Sim.AR*Sim.Mod.cart_height;
+        
+        [Sim.Env,FloorX,FloorY] = Sim.Env.Init(Sim.FlMin,Sim.FlMax);
+        Sim.Mod.Env_params.FloorX = FloorX;
+        Sim.Mod.Env_params.FloorY = FloorY;
 
     end
- 
+     
     Sim.Mod.Hip_Torque = Sim.Con.u;
     Sim.Mod.Ankle_Torque = 0; 
     
-
     % if shorten is by reflex - then dont short at end of period:
+
     Sim.Mod.ShortenReflexOn = isnan(Sim.Con.phi_reflex(1));
     Sim.Mod.ExtendReflexOn =  isnan(Sim.Con.phi_reflex(2));
     
-     Sim.Con.ShortenAtPhase  =  ~Sim.Mod.ShortenReflexOn ;
+   %  Sim.Con.ShortenAtPhase  =  ~Sim.Mod.ShortenReflexOn ;
 %     Sim.Con.ExtendAtPhase =  ~Sim.Mod.ShortenReflexOn ;
 
     
@@ -124,9 +131,7 @@ function [ Sim ] = Init( Sim )
     Sim.stance_counter = 0;
     Sim.StepsTaken = 0;
 
-
     % init stats:
-
     Sim.ICstore = zeros(Sim.stDim, Sim.nICsStored);
     Sim.stepsSS = zeros(1,Sim.nICsStored-1);
     
@@ -141,6 +146,5 @@ function [ Sim ] = Init( Sim )
     Sim.Out.ZMPval1 = [];
     Sim.Out.ZMPval2 = [];
     Sim.Out.EventsVec = [];
-
 end
 

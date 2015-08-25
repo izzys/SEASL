@@ -14,7 +14,7 @@ function [] = Render(Sim,t,X,flag)
                             Sim.FigWidth Sim.FigHeight]);
                     end
                 else
-                    Sim.Fig = figure();
+                    Sim.Fig = figure(325);
                     % Make window larger
                     set(Sim.Fig,'Position', [100 200,...
                         Sim.FigWidth Sim.FigHeight]);
@@ -86,10 +86,16 @@ function [] = Render(Sim,t,X,flag)
         
          axis([Sim.FlMin Sim.FlMax Sim.HeightMin Sim.HeightMax]);      
 
+        
+        % Update environment render
+        [ Sim.Env,FloorX, FloorY ]= Sim.Env.Render(Sim.FlMin,Sim.FlMax);
+        
+        %pass to model:
+        Sim.Mod.Env_params.FloorX = FloorX;
+        Sim.Mod.Env_params.FloorY = FloorY;
+        
         % Update model render
         Sim.Mod = Sim.Mod.Render(X(end,Sim.ModCo));
-        % Update environment render
-        Sim.Env = Sim.Env.Render(Sim.FlMin,Sim.FlMax);
         % Update time display
         set(Sim.hTime,'string',...
             sprintf(Sim.TimeStr,t(1), int2str(Sim.StepsTaken)) );

@@ -12,10 +12,11 @@ classdef SEASLController < handle & matlab.mixin.Copyable
         Linear_motor_in = 0;
         Linear_motor_out = 0;
         
-
         % flag to shorten leg at end of period:
+
         ExtendAtPhase;
         ShortenAtPhase;
+
         
         % Controller type:
         Controller_Type; 
@@ -38,9 +39,6 @@ classdef SEASLController < handle & matlab.mixin.Copyable
         phi_reflex;
         phi;
         
-        SetKeys = {'Period','tau','phi'}
-        
-
     end
     
     methods
@@ -55,7 +53,8 @@ classdef SEASLController < handle & matlab.mixin.Copyable
           switch NC.Controller_Type
               
               case 'CPG'
-   
+
+
                 NC.omega0 = 1/NC.Period;
                 NC.phi = [NC.phi_tau,  NC.phi_reflex ] ;
                 NC.nEvents = 1+length(NC.phi);
@@ -129,7 +128,7 @@ classdef SEASLController < handle & matlab.mixin.Copyable
         
         % Handle Events:
         function [NC,Xafter] = HandleEvent(NC, evID, Xbefore, t) %#ok<INUSD>
-            
+
             Xafter = Xbefore;
             switch evID
                 
