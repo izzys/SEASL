@@ -9,6 +9,7 @@ function [ Sim ] = Init( Sim )
     Sim.nEvents = Sim.Mod.nEvents + Sim.Con.nEvents;
     Sim.ModEv = 1:Sim.Mod.nEvents; % Model events indices
     Sim.ConEv = Sim.Mod.nEvents+1:Sim.nEvents; % Contr. events indices
+    
 
     
     % Set linear motor - in/out:
@@ -21,6 +22,7 @@ function [ Sim ] = Init( Sim )
 
 
     % check here if IC are ok !! 
+
     [ ~, y_hip ] = GetPos(Sim.Mod, Sim.Mod.IC, 'hip');
     if y_hip<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
         if strcmp(Sim.Mod.Phase ,'stance')
@@ -36,12 +38,12 @@ function [ Sim ] = Init( Sim )
     end
     [ ~, y_ankle ] = GetPos(Sim.Mod, Sim.Mod.IC, 'ankle');
     if y_ankle<Sim.Mod.ankle_radius
+
           if strcmp(Sim.Mod.Phase ,'swing')
              Sim.Mod.Phase = 'stance';
           else
              error('Error: wrong IC , foot penetrates ground')
           end
-
     end
     
     % Check Sim IC:
@@ -49,7 +51,6 @@ function [ Sim ] = Init( Sim )
         error('Error: contradicting starting position. Cannot be in start phase: stance, and linear motor: in')
     end
     
-
 
 
     % init model:
@@ -107,9 +108,13 @@ function [ Sim ] = Init( Sim )
         Sim.FlMax = Sim.COMx0+1.5*Sim.AR*Sim.Mod.cart_length;
         Sim.HeightMin = Sim.COMy0-4/Sim.AR*Sim.Mod.cart_height;
         Sim.HeightMax = Sim.COMy0+4/Sim.AR*Sim.Mod.cart_height;
+        
+        [Sim.Env,FloorX,FloorY] = Sim.Env.Init(Sim.FlMin,Sim.FlMax);
+        Sim.Mod.Env_params.FloorX = FloorX;
+        Sim.Mod.Env_params.FloorY = FloorY;
 
     end
- 
+     
     Sim.Mod.Hip_Torque = Sim.Con.u;
     Sim.Mod.Ankle_Torque = 0; 
     
@@ -118,14 +123,13 @@ function [ Sim ] = Init( Sim )
     Sim.Mod.ShortenReflexOn = isnan(Sim.Con.phi_reflex(1));
     Sim.Mod.ExtendReflexOn =  isnan(Sim.Con.phi_reflex(2));
     
-     Sim.Con.ShortenAtPhase  =  ~Sim.Mod.ShortenReflexOn ;
+   %  Sim.Con.ShortenAtPhase  =  ~Sim.Mod.ShortenReflexOn ;
 %     Sim.Con.ExtendAtPhase =  ~Sim.Mod.ShortenReflexOn ;
 
     
     % counters:
     Sim.stance_counter = 0;
     Sim.StepsTaken = 0;
-
 
     % init stats:
     Sim.ICstore = zeros(Sim.stDim, Sim.nICsStored);

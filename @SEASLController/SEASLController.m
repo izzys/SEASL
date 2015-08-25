@@ -53,7 +53,8 @@ classdef SEASLController < handle & matlab.mixin.Copyable
           switch NC.Controller_Type
               
               case 'CPG'
-                  
+
+
                 NC.omega0 = 1/NC.Period;
                 NC.phi = [NC.phi_tau,  NC.phi_reflex ] ;
                 NC.nEvents = 1+length(NC.phi);
@@ -127,7 +128,7 @@ classdef SEASLController < handle & matlab.mixin.Copyable
         
         % Handle Events:
         function [NC,Xafter] = HandleEvent(NC, evID, Xbefore, t) %#ok<INUSD>
-            
+
             Xafter = Xbefore;
             switch evID
                 

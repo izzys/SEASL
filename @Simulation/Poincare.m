@@ -15,8 +15,8 @@ Ncoord = length(Coords);
 IC = repmat(sim.IClimCyc(Coords), Ncoord, 1);
 
 % Disturbed initial conditions
-dIC = IC;
-dICp = IC;
+dIC = IC';
+dICp = IC';
 for d = 1:Ncoord
     dIC(d,d) = dIC(d,d) + sim.PMeps;
 end
@@ -26,15 +26,15 @@ PMSim = copy(sim);
 PMSim.EndCond = [1,sim.Period(1)];
 %Slope = PMSim.Env.SurfSlope(PMSim.Mod.xS);
 for d = 1:Ncoord
-    PMSim.Graphics = 1;
+
     PMSim.Mod = PMSim.Mod.Set('Phase','stance','LinearMotor','out');
 
     % Init controller:
-    PMSim.Con.IC = dIC(d,2);
+    PMSim.Con.IC = dIC(2,d);
     PMSim.Con.Init();
     
     PMSim.Mod.IC(1) = sim.IClimCyc(1);  
-    PMSim.Mod.IC(2) = dIC(d,1);
+    PMSim.Mod.IC(2) = dIC(1,d);
     PMSim.Mod.IC([3 4])=[NaN NaN];
     PMSim = PMSim.Init();
 
@@ -46,11 +46,12 @@ for d = 1:Ncoord
 %         EigVec = eye(Ncoord);
 %         return;
 %     end
-    dICp(d,:) = PMSim.ICstore(1,Coords);
+    dICp(:,d) = PMSim.ICstore(1,Coords)';
 end
 
 % Calculate deviation
-DP = 1/sim.PMeps*(dICp - IC);
+DP = 1/sim.PMeps*(dICp - IC');
+sim.Out.DP = DP;
 [EigVec,EigVal] = eig(DP,'nobalance');
 EigVal = diag(EigVal);
 end

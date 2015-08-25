@@ -46,12 +46,11 @@ classdef Simulation < handle & matlab.mixin.Copyable
         
         StepsTaken;
         EventsCounter = 0; 
- 
         ICstore; nICsStored = 5;
         minDiff = 1e-8; % Min. difference for LC convergence
  
         stepsReq = 5; % Steps of minDiff required for convergence
- 
+
         stepsSS; % Steps taken since minDiff
         
         
@@ -97,7 +96,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
  
                     Sim.Mod = SEASL();
                     Sim.Con = SEASLController();
-                    Sim.Env = Terrain();
+                    Sim.Env = Terrain(4); % Type 4 terrain - disturbances
            
         end
         
@@ -177,7 +176,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
  
             % Call model event function
             [value(Sim.ModEv), isterminal(Sim.ModEv), direction(Sim.ModEv)] = ...
-                Sim.Mod.Events(t,X(Sim.ModCo), Sim.Env);
+                Sim.Mod.Events(t,X(Sim.ModCo));
             
             % Call controller event function
             [value(Sim.ConEv), isterminal(Sim.ConEv), direction(Sim.ConEv)] = ...
@@ -231,6 +230,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
            if Sim.Graphics == 1
              Sim.Render(t,X,flag);
            end
+           warning('need to have floor also when graphics off!!!')
            
            status = Sim.StopSim; 
             
@@ -296,7 +296,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
             end
         end
         
-        function [] = RecordEvents(Sim,TE,YE,IE)
+        function [] = RecordEvents(Sim,TE,YE,IE,Xa)
             
            if ~isempty(IE)
             
@@ -308,11 +308,20 @@ classdef Simulation < handle & matlab.mixin.Copyable
                        YE(end,3) = x;
                        YE(end,4) = dx;
                    end
- 
+                   
+                   
+                   if sum(isnan(Xa)) 
+                       [x_a , ~] = Sim.Mod.GetPos(Xa(end,:),'cart'); 
+                       [dx_a , ~] = Sim.Mod.GetVel(Xa(end,:),'cart');  
+                       Xa(3) = x_a;
+                       Xa(4) = dx_a;
+                   end
+                   
+
                Sim.Out.EventsVec.Type{Sim.EventsCounter} = IE(end);
                Sim.Out.EventsVec.Time{Sim.EventsCounter} = TE(end);
                Sim.Out.EventsVec.State{Sim.EventsCounter} = YE(end,:);
-           
+               Sim.Out.EventsVec.Xa{Sim.EventsCounter} = Xa(end,:);
            end
  
         end
@@ -325,20 +334,24 @@ classdef Simulation < handle & matlab.mixin.Copyable
              end 
              
             % make sure hip in track:
-            [ ~, y_hip ] = GetPos(Sim.Mod, X, 'hip');
+            [ ~, y_hip ] = GetPos(Sim.Mod, X(end,:), 'hip');
            
             if (y_hip+1e-8)<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
                % warning('Warning:  hip too low')
                  Sim.Out.Type = Sim.EndFlag_HipHitTrack;
-                 Sim.Out.Text = 'Hip hit track';
+                 Sim.Out.Text = 'Hip hit track.';
+              %   error('Error: Hip hit track');
                  Sim.StopSim = 1;
             end
             
              % make sure leg does not penetrate ground:
-            [ ~, y_ankle ] = GetPos(Sim.Mod, X, 'ankle');
-            if (y_ankle+1e-8)<Sim.Mod.ankle_radius
-                warning('Warning:  foot penetrates ground')
-                
+
+            [ x_ankle, y_ankle ] = GetPos(Sim.Mod, X(end,:), 'ankle');
+
+            ind = find(x_ankle<=Sim.Mod.Env_params.FloorX,1,'first');
+            FloorY = Sim.Mod.Env_params.FloorY( ind );
+            if (y_ankle+1e-8)<(Sim.Mod.ankle_radius+FloorY)     
+               error('Error: Foot penetrates ground')           
             end 
  
              % make sure ZMP is within support polygon:
