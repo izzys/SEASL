@@ -35,11 +35,11 @@ Sim.Con.IC = Sim.IClimCyc(5); % LC
 Sim.Con.Init();
 
 % note that if IC match the stance phase - only the first two IC count:
+
 Sim.Mod.IC =   Sim.IClimCyc(1:4); % LC
 
 % add disturbance:
 Sim.Mod.IC(1) =  Sim.Mod.IC(1);%-2.056; 
-%Sim.Mod.IC(2) = -3.505; 
 
 Sim = Sim.Init();
 
@@ -52,7 +52,7 @@ Sim = Sim.Run();
 % close(Sim.VideoWriterObj);
 
 if Sim.Out.Type == Sim.EndFlag_Converged
-Sim.PMeps = 1e-3;
+Sim.PMeps = 5e-7;
 [EigVal,EigVec] = Sim.Poincare();
 EigVal
 end
