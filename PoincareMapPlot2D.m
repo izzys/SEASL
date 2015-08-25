@@ -11,7 +11,7 @@ for i = 1:length(CM(:))
         MarkerType = '+';
         MarkerColor = 'b';
         
-        [ix,iy,iz] = ind2sub(size(CM),i);
+        [ix,iy] = ind2sub(size(CM),i);
         P = PointFromCell([ix iy],x_range,y_range);
         scatter(P(1),P(2),MarkerSize,MarkerColor,MarkerType,'LineWidth',1)   
 
@@ -20,7 +20,7 @@ for i = 1:length(CM(:))
         MarkerType = '.';
         MarkerColor = 'r';
         
-        [ix,iy,iz] = ind2sub(size(CM),i);
+        [ix,iy] = ind2sub(size(CM),i);
         P = PointFromCell([ix iy],x_range,y_range);
         scatter(P(1),P(2),MarkerSize,MarkerColor,MarkerType,'LineWidth',1)   
     end

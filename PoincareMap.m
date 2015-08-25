@@ -16,11 +16,10 @@ Sim.minDiff = 1e-4; % Min. difference for LC convergence
 Sim.stepsReq=5;% Steps of minDiff required for convergence
 
 Sim.IClimCyc =  [  0.359391210427136   -3.525464278622958 NaN NaN 0.710126001714929]; % LC
-Nrange = 50;% range should be an even number
+Nrange = 36;% range should be an even number
 
 x_range = linspace (-4.5 , 4.5, Nrange)+Sim.IClimCyc(2);
 y_range = linspace (-0.25 , 0.25 , Nrange)+Sim.IClimCyc(5);
-
 
 f = @(dIC)( PoincareMapStep(Sim,dIC) );
 tic

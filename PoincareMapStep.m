@@ -16,7 +16,7 @@ try
 Simh = Simh.Init();
 catch init_err
     disp(init_err)
-    IC_mapped = [NaN NaN NaN]';
+    IC_mapped = [NaN  NaN];
     return
 end
 % Simulate
@@ -24,14 +24,14 @@ try
 Simh = Simh.Run();
 catch sim_err
     disp(sim_err)
-    IC_mapped = [NaN NaN NaN]';
+    IC_mapped = [NaN  NaN];
     return
 end
 out_type = Simh.Out.Type;
 IC_mapped = Simh.ICstore(1,[ 2 5]);
 
     if out_type ~= 1 %make sure to fix end_condition flag to 1 (path ) or 2  (full)!!!
-            IC_mapped = [NaN NaN NaN]';
+            IC_mapped = [NaN  NaN];
     end
 
 end

@@ -51,6 +51,7 @@ end
 
 % Calculate deviation
 DP = 1/sim.PMeps*(dICp - IC);
+sim.Out.DP = DP;
 [EigVec,EigVal] = eig(DP,'nobalance');
 EigVal = diag(EigVal);
 end
