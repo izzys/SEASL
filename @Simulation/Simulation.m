@@ -96,7 +96,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
  
                     Sim.Mod = SEASL();
                     Sim.Con = SEASLController();
-                    Sim.Env = Terrain();
+                    Sim.Env = Terrain(4); % Type 4 terrain - disturbances
            
         end
         
@@ -176,7 +176,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
  
             % Call model event function
             [value(Sim.ModEv), isterminal(Sim.ModEv), direction(Sim.ModEv)] = ...
-                Sim.Mod.Events(t,X(Sim.ModCo), Sim.Env);
+                Sim.Mod.Events(t,X(Sim.ModCo));
             
             % Call controller event function
             [value(Sim.ConEv), isterminal(Sim.ConEv), direction(Sim.ConEv)] = ...
@@ -230,6 +230,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
            if Sim.Graphics == 1
              Sim.Render(t,X,flag);
            end
+           warning('need to have floor also when graphics off!!!')
            
            status = Sim.StopSim; 
             
@@ -333,7 +334,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
              end 
              
             % make sure hip in track:
-            [ ~, y_hip ] = GetPos(Sim.Mod, X, 'hip');
+            [ ~, y_hip ] = GetPos(Sim.Mod, X(end,:), 'hip');
            
             if (y_hip+1e-8)<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
                % warning('Warning:  hip too low')
@@ -344,8 +345,12 @@ classdef Simulation < handle & matlab.mixin.Copyable
             end
             
              % make sure leg does not penetrate ground:
-            [ ~, y_ankle ] = GetPos(Sim.Mod, X, 'ankle');
-            if (y_ankle+1e-8)<Sim.Mod.ankle_radius     
+
+            [ x_ankle, y_ankle ] = GetPos(Sim.Mod, X(end,:), 'ankle');
+
+            ind = find(x_ankle<=Sim.Mod.Env_params.FloorX,1,'first');
+            FloorY = Sim.Mod.Env_params.FloorY( ind );
+            if (y_ankle+1e-8)<(Sim.Mod.ankle_radius+FloorY)     
                error('Error: Foot penetrates ground')           
             end 
  

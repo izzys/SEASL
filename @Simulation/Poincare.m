@@ -26,7 +26,7 @@ PMSim = copy(sim);
 PMSim.EndCond = [1,sim.Period(1)];
 %Slope = PMSim.Env.SurfSlope(PMSim.Mod.xS);
 for d = 1:Ncoord
-    PMSim.Graphics = 0;
+
     PMSim.Mod = PMSim.Mod.Set('Phase','stance','LinearMotor','out');
 
     % Init controller:

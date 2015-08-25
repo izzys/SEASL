@@ -22,6 +22,7 @@ function [ Sim ] = Init( Sim )
 
 
     % check here if IC are ok !! 
+
     [ ~, y_hip ] = GetPos(Sim.Mod, Sim.Mod.IC, 'hip');
     if y_hip<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
         if strcmp(Sim.Mod.Phase ,'stance')
@@ -107,9 +108,13 @@ function [ Sim ] = Init( Sim )
         Sim.FlMax = Sim.COMx0+1.5*Sim.AR*Sim.Mod.cart_length;
         Sim.HeightMin = Sim.COMy0-4/Sim.AR*Sim.Mod.cart_height;
         Sim.HeightMax = Sim.COMy0+4/Sim.AR*Sim.Mod.cart_height;
+        
+        [Sim.Env,FloorX,FloorY] = Sim.Env.Init(Sim.FlMin,Sim.FlMax);
+        Sim.Mod.Env_params.FloorX = FloorX;
+        Sim.Mod.Env_params.FloorY = FloorY;
 
     end
- 
+     
     Sim.Mod.Hip_Torque = Sim.Con.u;
     Sim.Mod.Ankle_Torque = 0; 
     

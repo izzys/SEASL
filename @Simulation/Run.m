@@ -83,9 +83,12 @@ end
                         end
 
                     case 3 % check that foot does not extend into ground
-                        
-                        [ ~, y_ankle ] = Sim.Mod.GetPos(Xa, 'ankle');
-                        if (y_ankle+1e-8)<Sim.Mod.ankle_radius
+                    
+                        [ x_ankle, y_ankle ] = Sim.Mod.GetPos(Xa, 'ankle');
+                        ind = find(x_ankle<=Sim.Mod.Env_params.FloorX,1,'first');
+                        FloorY = Sim.Mod.Env_params.FloorY( ind );
+                     
+                        if (y_ankle+1e-8)<(Sim.Mod.ankle_radius+FloorY)
                             Sim.Out.Type = Sim.EndFlag_LegHitsGroundDuringExtend;
                             Sim.Out.Text =' foot penetrates ground during extend';
                             Sim.StopSim = 1;
@@ -140,8 +143,11 @@ end
                     Sim.Con.Linear_motor_out = 0;
                     Sim.Mod.LinearMotor = 'out';
                     
-                    [ ~, y_ankle ] = Sim.Mod.GetPos(Xa, 'ankle');
-                    if (y_ankle+1e-8)<Sim.Mod.ankle_radius
+                    [ x_ankle, y_ankle ] = Sim.Mod.GetPos(Xa, 'ankle');
+                     ind = find(x_ankle<=Sim.Mod.Env_params.FloorX,1,'first');
+                     FloorY = Sim.Mod.Env_params.FloorY( ind );
+                     
+                    if (y_ankle+1e-8)<(Sim.Mod.ankle_radius+FloorY)
                         Sim.Out.Type = Sim.EndFlag_LegHitsGroundDuringExtend;
                         Sim.Out.Text ='foot penetrates ground during extend';
                         Sim.StopSim = 1;
