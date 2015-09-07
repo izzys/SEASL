@@ -88,6 +88,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
         VideoWriterObj;
         
         DebugMode = 0;
+        IgnoreErrors = 0;
     end
     
     methods
@@ -214,11 +215,13 @@ classdef Simulation < handle & matlab.mixin.Copyable
                    
  
                   % Check for errors and consflicts (for debugging):
-                  Sim.CheckForErrors(t,X);
+                  if ~Sim.IgnoreErrors
+                     Sim.CheckForErrors(t,X);
+                  end
                   
                   % get controler action:
-                  Sim.Mod.Hip_Torque = Sim.Con.Get_Hip_Torque(X(:,end),t(1)); 
-                  Sim.Mod.Ankle_Torque = Sim.Con.Get_Ankle_Torque(X(:,end),t(1));
+                  Sim.Mod.Hip_Torque = Sim.Con.Get_Hip_Torque(X(end,:),t(1)); 
+                  Sim.Mod.Ankle_Torque = Sim.Con.Get_Ankle_Torque(X(end,:),t(1));
                   
                   % save for out:
                   Sim.Out.Hip_u = [Sim.Out.Hip_u ; Sim.Mod.Hip_Torque];
@@ -227,10 +230,10 @@ classdef Simulation < handle & matlab.mixin.Copyable
                   
            end
            
-           if Sim.Graphics == 1
+
              Sim.Render(t,X,flag);
-           end
-           warning('need to have floor also when graphics off!!!')
+
+           
            
            status = Sim.StopSim; 
             
@@ -336,7 +339,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
             % make sure hip in track:
             [ ~, y_hip ] = GetPos(Sim.Mod, X(end,:), 'hip');
            
-            if (y_hip+1e-8)<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
+            if (y_hip+1e-8)<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2) 
                % warning('Warning:  hip too low')
                  Sim.Out.Type = Sim.EndFlag_HipHitTrack;
                  Sim.Out.Text = 'Hip hit track.';
@@ -350,7 +353,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
 
             ind = find(x_ankle<=Sim.Mod.Env_params.FloorX,1,'first');
             FloorY = Sim.Mod.Env_params.FloorY( ind );
-            if (y_ankle+1e-8)<(Sim.Mod.ankle_radius+FloorY)     
+            if (y_ankle+1e-8)<(Sim.Mod.ankle_radius+FloorY)
                error('Error: Foot penetrates ground')           
             end 
  

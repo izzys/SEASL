@@ -53,11 +53,15 @@ end
             if ~isempty(ModEvID)
                 
                 [Sim.Mod,Xa(Sim.ModCo)] = ...
-                    Sim.Mod.HandleEvent(ModEvID, XTemp(end,Sim.ModCo),TTemp(end));
+                    Sim.Mod.HandleEvent(ModEvID, Xa(Sim.ModCo),TTemp(end));
                 
                 % Call controller for model events:
+                if strcmp(Sim.Mod.Phase, 'stance')
+                    [Xa(3) , ~] = Sim.Mod.GetPos(Xa,'cart'); 
+                    [Xa(4) , ~] = Sim.Mod.GetVel(Xa,'cart'); 
+                end
                 [Sim.Con,Xa(Sim.ConCo)] =  ...
-                    Sim.Con.HandleExtEvent(ModEvID, XTemp(end,:),TTemp(end));
+                    Sim.Con.HandleExtEvent(ModEvID, XTemp(end,:),Xa,TTemp(end));
                 
                      
                 switch ModEvID 
@@ -74,7 +78,7 @@ end
 
                     case 2  %check that leg hits track only if theta>0 
 
-                        if Xa(1)>0
+                        if Xa(1)>0 && ~Sim.IgnoreErrors
                             Sim.Out.Type = Sim.EndFlag_NoSignChange;
                             Sim.Out.Text = 'Leg hits track when theta>0';
                             Sim.StopSim = 1;
@@ -88,7 +92,7 @@ end
                         ind = find(x_ankle<=Sim.Mod.Env_params.FloorX,1,'first');
                         FloorY = Sim.Mod.Env_params.FloorY( ind );
                      
-                        if (y_ankle+1e-8)<(Sim.Mod.ankle_radius+FloorY)
+                        if (y_ankle+1e-8)<(Sim.Mod.ankle_radius+FloorY) && ~Sim.IgnoreErrors
                             Sim.Out.Type = Sim.EndFlag_LegHitsGroundDuringExtend;
                             Sim.Out.Text =' foot penetrates ground during extend';
                             Sim.StopSim = 1;
@@ -147,7 +151,7 @@ end
                      ind = find(x_ankle<=Sim.Mod.Env_params.FloorX,1,'first');
                      FloorY = Sim.Mod.Env_params.FloorY( ind );
                      
-                    if (y_ankle+1e-8)<(Sim.Mod.ankle_radius+FloorY)
+                    if (y_ankle+1e-8)<(Sim.Mod.ankle_radius+FloorY) && ~Sim.IgnoreErrors
                         Sim.Out.Type = Sim.EndFlag_LegHitsGroundDuringExtend;
                         Sim.Out.Text ='foot penetrates ground during extend';
                         Sim.StopSim = 1;

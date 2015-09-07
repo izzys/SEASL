@@ -10,7 +10,7 @@ classdef SEASL < handle & matlab.mixin.Copyable
         
         stDim = 4; % state dimension
         
-        nEvents = 3; % num. of simulation events
+        nEvents = 4; % num. of simulation events
         IC;
         x0;
         
@@ -22,7 +22,9 @@ classdef SEASL < handle & matlab.mixin.Copyable
         Cart_params = [];
         
         Phase = 'stance'; %options: 'stance' , 'stance_hit_track' , 'swing'
-
+        
+        NominalLC = [];
+        
         % Control:
         Hip_Torque = 0;
         Ankle_Torque = 0;
@@ -387,7 +389,7 @@ classdef SEASL < handle & matlab.mixin.Copyable
                     G3 = m_leg*g*l_cg*sin(theta);
                     G4 = (c_hip+c_ankle+c_floor*l^2*cos(theta)^2+c_track*l^2*sin(theta)^2)*dtheta;
                     tau = T_hip+T_ankle;
-                    
+
                     dq(1) = q(2);
                     dq(2) = 1/M*(G1-G2+G3-G4+tau);
                     
@@ -407,8 +409,8 @@ classdef SEASL < handle & matlab.mixin.Copyable
  
                     dq(1) = 0;
                     dq(2) = 0;    
-                    dq(3) = q(4); 
-                    dq(4) = -(c_floor+c_sole)/(m_leg+m_cart)*q(4); 
+                    dq(3) = q(4);
+                    dq(4) = -(c_floor+c_sole)/(m_leg+m_cart)*q(4) ;
 
                 otherwise
                     error('Error: phase not defined')
@@ -427,6 +429,7 @@ classdef SEASL < handle & matlab.mixin.Copyable
                         
             % Event #1 - foot hits floor:
             if strcmp(Mod.Phase,'swing') 
+                            
                 [x_ankle,y_ankle] = Mod.GetPos(X,'ankle');
                 ind = find(x_ankle<=Mod.Env_params.FloorX,1,'first');
                 FloorY = Mod.Env_params.FloorY( ind );
@@ -451,7 +454,13 @@ classdef SEASL < handle & matlab.mixin.Copyable
                 value(3) = X(2);
                 isterminal(3) = 1;
                 direction(3) = -1;                                 
-            end            
+             end   
+            
+            % Event #4 - system reaches nominal limit cycle value
+     
+                value(4) = X(1)-Mod.NominalLC(1);
+                isterminal(4) = 1;
+                direction(4) = -1;
               
         end
         
@@ -464,7 +473,7 @@ classdef SEASL < handle & matlab.mixin.Copyable
             switch evID
                 
                 case 1 % Event #1 - foot hits floor:
-                               
+                             
                     e = Mod.Leg_params.e;
                     l = Mod.Leg_params.stance_length;
                     m_cart = Mod.Cart_params.m;
@@ -505,13 +514,12 @@ classdef SEASL < handle & matlab.mixin.Copyable
                         
                     else
                         
-                   %     Xa(2) = 0;
-                   %     Mod.Phase = 'stance_hit_track'; 
+%                         Xa(2) = 0;
+%                         Mod.Phase = 'stance_hit_track'; 
                        
                     end
 
-
-                    
+    
                 case 3 % Event #3 - max height to open leg:
                     
                     if Mod.ExtendReflexOn     
@@ -524,6 +532,9 @@ classdef SEASL < handle & matlab.mixin.Copyable
 %                          l = Mod.Leg_params.stance_length;
 %                          Mod.x0 = Xb(3)+l*sin(theta);
 %                          Xa(4) = 0;
+
+                case 4  % Event #4 - system reaches nominal limit cycle value
+                    % do nothing
 
                 otherwise
                      

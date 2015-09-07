@@ -1,5 +1,9 @@
 function [] = Render(Sim,t,X,flag)
 % Renders the simulation graphics
+
+
+    if Sim.Graphics == 1
+        
     switch flag
         case 'init'
             t = t(1);
@@ -119,4 +123,20 @@ function [] = Render(Sim,t,X,flag)
     drawnow
 %      frame = getframe;
 %      writeVideo(Sim.VideoWriterObj,frame);
+
+    else
+        
+        if ~isempty(X)
+            
+         [COMx,COMy]=Sim.Mod.GetPos(X(end,:),'COM');   
+         Sim.FlMin = COMx-2*Sim.Mod.cart_length;
+         Sim.FlMax = COMx+2*Sim.Mod.cart_length;  
+         FloorX = Sim.FlMin:Sim.Env.FloorStep:Sim.FlMax;
+         FloorY = Sim.Env.Surf(FloorX);
+         %Pass to model:
+         Sim.Mod.Env_params.FloorX = FloorX;
+         Sim.Mod.Env_params.FloorY = FloorY;  
+        end
+        
+    end
 end

@@ -10,7 +10,11 @@ function [ Sim ] = Init( Sim )
     Sim.ModEv = 1:Sim.Mod.nEvents; % Model events indices
     Sim.ConEv = Sim.Mod.nEvents+1:Sim.nEvents; % Contr. events indices
     
-
+    Sim.Mod.x0 = 0;
+    Sim.Con.IC = mod(Sim.Con.IC,1);
+    Sim.IC = [Sim.Mod.IC ,  Sim.Con.IC];
+    Sim.StopSim = 0;
+    Sim.PauseSim = 0; 
     
     % Set linear motor - in/out:
     if Sim.Mod.IC(2)<=0 && Sim.Mod.IC(1)>0 
@@ -18,6 +22,7 @@ function [ Sim ] = Init( Sim )
     end
     if Sim.Mod.IC(2)>0 && Sim.Mod.IC(1)>=0
         Sim.Mod.LinearMotor = 'in';
+        Sim.Mod.Phase = 'swing';
     end
 
 
@@ -36,6 +41,7 @@ function [ Sim ] = Init( Sim )
         end
         
     end
+    
     [ ~, y_ankle ] = GetPos(Sim.Mod, Sim.Mod.IC, 'ankle');
     if y_ankle<Sim.Mod.ankle_radius
 
@@ -77,10 +83,7 @@ function [ Sim ] = Init( Sim )
 %         Sim.Con.IC = repmat(Sim.Con.IC,Sim.Con.NumOfNeurons,1);
 %     end
 
-    Sim.Mod.x0 = 0;
-    Sim.IC = [Sim.Mod.IC ,  Sim.Con.IC];
-    Sim.StopSim = 0;
-    Sim.PauseSim = 0; 
+
     
     % Set render params
     if Sim.Graphics == 1
@@ -108,21 +111,37 @@ function [ Sim ] = Init( Sim )
         Sim.FlMax = Sim.COMx0+1.5*Sim.AR*Sim.Mod.cart_length;
         Sim.HeightMin = Sim.COMy0-4/Sim.AR*Sim.Mod.cart_height;
         Sim.HeightMax = Sim.COMy0+4/Sim.AR*Sim.Mod.cart_height;
-        
+        warning('need to have floor also when graphics off!!!')
         [Sim.Env,FloorX,FloorY] = Sim.Env.Init(Sim.FlMin,Sim.FlMax);
         Sim.Mod.Env_params.FloorX = FloorX;
         Sim.Mod.Env_params.FloorY = FloorY;
 
+    else
+        if isempty(Sim.IC)
+            [Sim.COMx0,Sim.COMy0] = Sim.Mod.GetPos(zeros(1,Sim.Mod.stDim),'COM');
+        else
+            [Sim.COMx0,Sim.COMy0] = Sim.Mod.GetPos(Sim.IC(Sim.ModCo),'COM');
+        end
+        
+        Sim.FlMin = Sim.COMx0-2*Sim.Mod.cart_length;
+        Sim.FlMax = Sim.COMx0+2*Sim.Mod.cart_length;
+        [Sim.Env,FloorX,FloorY] = Sim.Env.Init(Sim.FlMin,Sim.FlMax);
+        Sim.Mod.Env_params.FloorX = FloorX;
+        Sim.Mod.Env_params.FloorY = FloorY;
+        
     end
      
+    %Init more model stuff:
     Sim.Mod.Hip_Torque = Sim.Con.u;
     Sim.Mod.Ankle_Torque = 0; 
+    Sim.Mod.NominalLC = Sim.IClimCyc;
+    Sim.Con.NominalLC = Sim.IClimCyc;
     
     % if shorten is by reflex - then dont short at end of period:
 
     Sim.Mod.ShortenReflexOn = isnan(Sim.Con.phi_reflex(1));
     Sim.Mod.ExtendReflexOn =  isnan(Sim.Con.phi_reflex(2));
-    
+        
    %  Sim.Con.ShortenAtPhase  =  ~Sim.Mod.ShortenReflexOn ;
 %     Sim.Con.ExtendAtPhase =  ~Sim.Mod.ShortenReflexOn ;
 

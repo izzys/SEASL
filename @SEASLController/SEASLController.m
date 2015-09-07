@@ -7,6 +7,9 @@ classdef SEASLController < handle & matlab.mixin.Copyable
         nEvents = 1; % num. of controller events
         IC;
         
+        % Nominal limit-cycle;
+        NominalLC;
+        
         % Controller output:
         u = 0;
         Linear_motor_in = 0;
@@ -16,7 +19,9 @@ classdef SEASLController < handle & matlab.mixin.Copyable
 
         ExtendAtPhase;
         ShortenAtPhase;
-
+        
+        PhaseReset = 0;
+        PhaseShift = 0;
         
         % Controller type:
         Controller_Type; 
@@ -38,7 +43,7 @@ classdef SEASLController < handle & matlab.mixin.Copyable
         phi_tau;
         phi_reflex;
         phi;
-        
+        phi0;
     end
     
     methods
@@ -54,7 +59,6 @@ classdef SEASLController < handle & matlab.mixin.Copyable
               
               case 'CPG'
 
-
                 NC.omega0 = 1/NC.Period;
                 NC.phi = [NC.phi_tau,  NC.phi_reflex ] ;
                 NC.nEvents = 1+length(NC.phi);
@@ -67,6 +71,11 @@ classdef SEASLController < handle & matlab.mixin.Copyable
                 if NC.IC>NC.phi_tau(3) && NC.IC<NC.phi_tau(4)
                     NC.u = NC.tau(2);
                 end
+                
+              case 'sin'
+                  
+                NC.omega0 = 1/NC.Period;  
+                
                
               otherwise
                   
@@ -84,7 +93,10 @@ classdef SEASLController < handle & matlab.mixin.Copyable
                    
                   Xdot = NC.omega0;
                    
+               case 'sin'
                    
+                  Xdot = NC.omega0;
+                  
               otherwise
                   
                   Xdot = 0;
@@ -116,6 +128,13 @@ classdef SEASLController < handle & matlab.mixin.Copyable
                        isterminal(i) = 1;
                        direction(i) = -1;
                    end
+                   
+                case 'sin'
+                    
+                   % Event 1: end of periof
+                   value(1) = 1-X;
+                   isterminal(1) = 1;
+                   direction(1) =  -1;                  
 
                otherwise
                   
@@ -170,16 +189,30 @@ classdef SEASLController < handle & matlab.mixin.Copyable
             
         end
         
-        function [NC,Xafter] = HandleExtEvent(NC, Ext_evID, Xbefore, t)
+        function [NC,Xa_con] = HandleExtEvent(NC, Ext_evID, Xb,Xa_mod, t)
+          
 
-            Xafter = Xbefore(end-NC.stDim+1:end);
-            
+
+            Xa_con = Xa_mod(end-NC.stDim+1:end);
+             
             switch Ext_evID
                 
                 case 1 
 
-                    % ???
-                            
+                    if NC.PhaseShift
+                        
+                      LC = NC.NominalLC;  
+                      diff = Xa_mod(5) - LC(5) ;   
+                      Xa_con = Xa_con-0.2*diff;
+
+                    end
+                    
+                    if NC.PhaseReset
+   
+                      Xa_con = NC.NominalLC(5);
+
+                    end
+                    
                 case 2
                     
                     % ???
@@ -206,7 +239,9 @@ classdef SEASLController < handle & matlab.mixin.Copyable
                     
                     T =  NC.u;
 
-    
+               case 'sin'
+ 
+                    T =  NC.tau*sin(t(end)*2*pi*NC.omega0+NC.phi0);
                otherwise
                    
                        T = 0;

@@ -61,15 +61,22 @@ Event4_time = EventsTime(ind_event4);
 Event4_state = EventsX(ind_event4,:);
 Event4_sym = '*b';
 if ~isempty(ind_event4)
-    Legend4 = 'Event4 - new phase';
+    Legend4 = 'Event4 - nominal LC';
 else
     Legend4 ='';
 end
 
 
+ind_event5 = find(cell2mat(Sim.Out.EventsVec.Type)==5);
+Event5_time = EventsTime(ind_event5);
+Event5_state = EventsX(ind_event5,:);
+Event5_sym = 'hk';
+if ~isempty(ind_event5)
+    Legend5 = 'Event5 - end of phase';
+else
+    Legend5 ='';
+end
 
-Poincare_sym = '--hk';
-Poincare_state = Xa(ind_event1,:);
 
 color = [rand(1) rand(1) rand(1)];
 
@@ -84,17 +91,18 @@ plot(Event1_time,Event1_state(:,1),Event1_sym)
 plot(Event2_time,Event2_state(:,1),Event2_sym)
 plot(Event3_time,Event3_state(:,1),Event3_sym)
 plot(Event4_time,Event4_state(:,1),Event4_sym)
+plot(Event5_time,Event5_state(:,1),Event5_sym)
 
 if ~isempty(ind_event2)
-legend(Legend1,Legend2,Legend3,Legend4)
+legend(Legend1,Legend2,Legend3,Legend4,Legend5)
 else
-    legend(Legend1,Legend3,Legend4)
+    legend(Legend1,Legend3,Legend4,Legend5)
 end
 plot(t,theta,'Color',color)
 
 subplot 322
 hold on
-plot(t,x)
+plot(t,x,'Color',color)
 ylabel('x , zmp')
 plot(zmp_time,zmp1,'.m')
 plot(zmp_time,zmp2,'.c')
@@ -105,6 +113,7 @@ plot(Event1_time,Event1_state(:,3),Event1_sym)
 plot(Event2_time,Event2_state(:,3),Event2_sym)
 plot(Event3_time,Event3_state(:,3),Event3_sym)
 plot(Event4_time,Event4_state(:,3),Event4_sym)
+plot(Event5_time,Event5_state(:,3),Event5_sym)
 
 subplot 323
 hold on
@@ -113,6 +122,8 @@ plot(Event1_time,Event1_state(:,2),Event1_sym)
 plot(Event2_time,Event2_state(:,2),Event2_sym)
 plot(Event3_time,Event3_state(:,2),Event3_sym)
 plot(Event4_time,Event4_state(:,2),Event4_sym)
+plot(Event5_time,Event5_state(:,2),Event5_sym)
+
 ylabel('\theta dot')
 
 subplot 324
@@ -121,7 +132,9 @@ plot(Event1_time,Event1_state(:,4),Event1_sym)
 plot(Event2_time,Event2_state(:,4),Event2_sym)
 plot(Event3_time,Event3_state(:,4),Event3_sym)
 plot(Event4_time,Event4_state(:,4),Event4_sym)
-plot(t,dx)
+plot(Event5_time,Event5_state(:,4),Event5_sym)
+
+plot(t,dx,'Color',color)
 ylabel('x dot')
 
 subplot 325
@@ -130,6 +143,11 @@ hold on
 plot(t,phase,'--','Color',[0.7 0.7 0.7])
 ylabel('u hip')
 xlabel('Time [sec]')
+plot(Event1_time,Event1_state(:,5),Event1_sym)
+plot(Event2_time,Event2_state(:,5),Event2_sym)
+plot(Event3_time,Event3_state(:,5),Event3_sym)
+plot(Event4_time,Event4_state(:,5),Event4_sym)
+plot(Event5_time,Event5_state(:,5),Event5_sym)
 subplot 326
 hold on
 plot(u_time,ankle_u,'Color',color)
@@ -145,12 +163,14 @@ plot(Event1_state(:,1),Event1_state(:,2),Event1_sym)
 plot(Event2_state(:,1),Event2_state(:,2),Event2_sym)
 plot(Event3_state(:,1),Event3_state(:,2),Event3_sym)
 plot(Event4_state(:,1),Event4_state(:,2),Event4_sym)
+plot(Event5_state(:,1),Event5_state(:,2),Event5_sym)
+
 if ~isempty(ind_event2)
 legend(Legend1,Legend2,Legend3,Legend4)
 else
     legend(Legend1,Legend3,Legend4)
 end
-plot(theta,dtheta,'color',color)
+plot(theta,dtheta,'Color',color)
 xlabel('\theta')
 ylabel('d\theta')
 
@@ -161,13 +181,14 @@ plot(Event1_state(:,2),Event1_state(:,5),Event1_sym)
 plot(Event2_state(:,2),Event2_state(:,5),Event2_sym)
 plot(Event3_state(:,2),Event3_state(:,5),Event3_sym)
 plot(Event4_state(:,2),Event4_state(:,5),Event4_sym)
+plot(Event5_state(:,2),Event5_state(:,5),Event5_sym)
 
 if ~isempty(ind_event2)
-legend(Legend1,Legend2,Legend3,Legend4)
+legend(Legend1,Legend2,Legend3,Legend4,Legend5)
 else
-    legend(Legend1,Legend3,Legend4)
+    legend(Legend1,Legend3,Legend4,Legend5)
 end
-plot(dtheta,phase,'color',color)
+plot(dtheta,phase,'Color',color)
 xlabel('d\theta')
 ylabel('\phi')
 
@@ -178,21 +199,28 @@ plot3(Event1_state(:,1),Event1_state(:,2),Event1_state(:,5),Event1_sym)
 plot3(Event2_state(:,1),Event2_state(:,2),Event2_state(:,5),Event2_sym)
 plot3(Event3_state(:,1),Event3_state(:,2),Event3_state(:,5),Event3_sym)
 plot3(Event4_state(:,1),Event4_state(:,2),Event4_state(:,5),Event4_sym)
+plot3(Event5_state(:,1),Event5_state(:,2),Event5_state(:,5),Event5_sym)
 
 if ~isempty(ind_event2)
-legend(Legend1,Legend2,Legend3,Legend4)
+legend(Legend1,Legend2,Legend3,Legend4,Legend5)
 else
-    legend(Legend1,Legend3,Legend4)
+    legend(Legend1,Legend3,Legend4,Legend5)
 end
-plot3(theta,dtheta,phase,'color',color)
+plot3(theta,dtheta,phase,'Color',color)
 xlabel('\theta')
 ylabel('d\theta')
 zlabel('\phi')
 
+
 figure(1)
 hold on
-
+Poincare_sym = '--hb';
+Poincare_state = Xa(ind_event1,:);
 %plot([ dtheta(1) ],[phase(1) ],Poincare_sym,'MarkerSize',10,'LineWidth',2)
 plot([dtheta(1)  ; Poincare_state(:,2)],[ phase(1) ; Poincare_state(:,5)],Poincare_sym,'MarkerSize',10,'LineWidth',2)
 drawnow
+
+disp 'avarage speed:'
+v1 = (Sim.Out.X(end,3)-Sim.Out.X(1,3))/Sim.Out.T(end)
+v2 = mean(Sim.Out.X(:,4))
 end
