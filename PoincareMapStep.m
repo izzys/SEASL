@@ -22,6 +22,7 @@ catch init_err
 end
 % Simulate
 try
+Simh.IgnoreErrors = 0;
 Simh = Simh.Run();
 catch sim_err
     disp(sim_err)

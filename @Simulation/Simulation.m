@@ -3,12 +3,12 @@ classdef Simulation < handle & matlab.mixin.Copyable
     properties(Constant)
  
         % End flags:
-        EndFlag_LegHitsGroundDuringExtend = -9;
-        EndFlag_MoreThanOneStance = -8;
-        EndFlag_HipHitTrack = -7;
-        EndFlag_NoSignChange = -6;
-        EndFlag_MaxLegAngle = -5;
-        EndFlag_WillNotWalk = -4;
+        EndFlag_LegHitsGroundDuringExtend = -8;
+        EndFlag_MoreThanOneStance = -5;
+        EndFlag_HipHitTrack = -5;
+        EndFlag_NoSignChange = -5;
+        EndFlag_MaxLegAngle = -11;
+        EndFlag_WillNotWalk = -5;
         EndFlag_ICpenetrateGround = -3;
         EndFlag_WindowClosed = -2
         EndFlag_StoppedByUser = -1;

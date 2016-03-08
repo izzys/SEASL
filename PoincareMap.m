@@ -1,4 +1,4 @@
-clc;clear all;%close all;clear classes;
+clc;%clear all;close all;clear classes;
 
 Sim = Simulation();
 
@@ -11,21 +11,18 @@ Sim.Env.end_x = 0;
 %Init controller:
 Sim.Con.Controller_Type = 'CPG';
 Sim.Con.PhaseReset = 0;
-% Init controller:                                                                     short            extend
-Sim.Con = Sim.Con.Set('Period',1.2,'phi_tau',[0.1 0.25 0.4 0.99],'tau',[2 -3],...
-                         'phi_reflex',[ 0.897308852443590   0.558365283467955 ]);  %0.897308852443590   0.558365283467955
 
-%  Sim.Con = Sim.Con.Set('Period',1.2,'phi_tau',[0.1 0.25 0.4 0.99],'tau',[2 -3],...
-%      'phi_reflex',[ NaN   NaN]);  %0.897308852443590   0.558365283467955
+% Init controller:                                                           
+Sim.Con = Sim.Con.Set('Period',1.35,'phi_tau',[0.1 0.25 0.4 0.99],'tau',[2 -3],'phi_reflex',[ 0.828683558027553 NaN ]);  %[0.828683558027553  0.532101234474471]
 Sim.Graphics = 0;
 Sim.EndCond = [1,1];%make sure to set: [1,1] (path )  2  (full)!!!
 Sim = Sim.SetTime(0,0.05,100);
 % Sim.minDiff = 1e-4; % Min. difference for LC convergence
 % Sim.stepsReq=5;% Steps of minDiff required for convergence
 
-Sim.IClimCyc =  [  0.359391210427136   -3.525464278622958 NaN NaN 0.710126001714929]; % LC
+Sim.IClimCyc = [   0.359391210428066  -5.158800156004810  85.095951771105874   4.346289131434057   0.717706102024171];
 
-Nrange = 48;% range should be an even number
+Nrange = 96;% range should be an even number
 
 x_range = linspace (-6.5 ,6.5 , Nrange)+Sim.IClimCyc(2);
 y_range = linspace (-0.75 , 0.75 , Nrange)+Sim.IClimCyc(5);

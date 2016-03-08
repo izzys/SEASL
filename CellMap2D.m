@@ -5,8 +5,8 @@ CM.Bin = -1*ones(nX-1,nY-1);
 CM.OutType = NaN(nX-1,nY-1);
 %%
 ind0 = GetCell2D([Sim.IClimCyc(2);Sim.IClimCyc(5)],x_range,y_range);
-CM.Bin(ind0(1),ind0(2)) = 2;
-CM.OutType(ind0(1),ind0(2)) = 2;
+CM.Bin(ind0(1),ind0(2)) = 1;
+CM.OutType(ind0(1),ind0(2)) = 1;
        % ic = PointFromCell([ind0(1),ind0(2)],x_range,y_range)
 
 
@@ -28,6 +28,9 @@ CM.OutType(ind0(1),ind0(2)) = 2;
 % CM.Bin(:,:,4) = spiral(5)+3*ll^2; 
 % CM.Bin(:,:,5) = spiral(5)+4*ll^2; 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 [sizeCMx , sizeCMy  ]= size(CM.Bin);
 if sizeCMx == sizeCMy && ~isodd(sizeCMx-1)
     
@@ -59,19 +62,19 @@ for i = SpiralInd
         while ~stop
             [ic  , out_type] = map_fun(ic)
             cur_cell = GetCell2D(ic,x_range,y_range);
-            CM.OutType(ind(end)) = out_type;
+           % CM.OutType(ind(end)) = out_type;
                 if ~isnan(cur_cell)
                     cur_ind = sub2ind(size(CM.Bin),cur_cell(1),cur_cell(2));
                     ind = [ind,cur_ind]
                     if CM.Bin(cur_ind) ~= -1
                         CM.Bin(ind) = CM.Bin(cur_ind); 
-                  %      CM.OutType(ind(end)) = out_type;
+                        CM.OutType(ind) = CM.OutType(cur_ind);
                         stop = 1;
                     end
                            
                 else
                     CM.Bin(ind) = 0;
-              %      CM.OutType(ind(end)) = out_type;
+                    CM.OutType(ind) = out_type;
                     stop = 1;
                             
                 end

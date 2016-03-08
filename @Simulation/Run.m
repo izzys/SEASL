@@ -30,18 +30,18 @@ function [ Sim ] = Run( Sim )
     
     while TimeCond && Sim.StopSim == 0
         
-% ~~ %%%%%%%%% for debugging %%%%%%%%%%  ~~   
-if Sim.DebugMode
-disp('=====================')
-Sim.Mod.Phase
-TE
-YE
-IE
+            % ~~ %%%%%%%%% for debugging %%%%%%%%%%  ~~   
+            if Sim.DebugMode
+            disp('=====================')
+            Sim.Mod.Phase
+            TE
+            YE
+            IE
 
-disp('=====================')
-pause
-end
-% ~~ %%%%%%%%% for debugging %%%%%%%%%%  ~~   
+            disp('=====================')
+            pause
+            end
+            % ~~ %%%%%%%%% for debugging %%%%%%%%%%  ~~   
 
 
         StepDone = 0;

@@ -1,5 +1,27 @@
 function []= plot_out(Sim)
 
+set(0, 'DefaultFigurePaperType', 'a4letter', ...
+ 'DefaultAxesFontSize', 10, ...
+'DefaultAxesFontName', 'TimesNewRoman', ...
+'DefaultAxesGridLineStyle', '-', ...
+'DefaultAxesLayer', 'Bottom', ...
+'DefaultAxesUnits', 'normalized', ...
+'DefaultAxesXcolor', [0, 0, 0], ...
+'DefaultAxesYcolor', [0, 0, 0], ...
+'DefaultAxesZcolor', [0, 0, 0], ...
+'DefaultAxesVisible', 'on', ...
+'DefaultLineLineStyle', '-', ...
+'DefaultLineLineWidth', 1, ...
+'DefaultLineMarker', 'none', ...
+'DefaultLineMarkerSize', 5, ...
+'DefaultTextColor', [0, 0, 0], ...
+'DefaultTextFontUnits', 'Points', ...
+'DefaultTextFontSize', 10, ...
+'DefaultTextFontName', 'TimesNewRoman', ...
+'DefaultTextVerticalAlignment', 'middle', ...
+'DefaultTextHorizontalAlignment', 'left');
+
+
 theta = Sim.Out.X(:,1);
 dtheta = Sim.Out.X(:,2);
 x = Sim.Out.X(:,3);
@@ -157,6 +179,30 @@ plot(t,phase,'--','Color',[0.7 0.7 0.7])
 
 
 figure(122)
+
+subplot 121
+hold on
+title('d\theta-\phi Phase plane ')
+plot(Event1_state(:,2),Event1_state(:,5),Event1_sym)
+plot(Event2_state(:,2),Event2_state(:,5),Event2_sym)
+plot(Event3_state(:,2),Event3_state(:,5),Event3_sym)
+plot(Event4_state(:,2),Event4_state(:,5),Event4_sym)
+plot(Event5_state(:,2),Event5_state(:,5),Event5_sym)
+
+if ~isempty(ind_event2)
+legend(Legend1,Legend2,Legend3,Legend4,Legend5)
+else
+    legend(Legend1,Legend3,Legend4,Legend5)
+end
+plot(dtheta,phase,'Color',color)
+xlabel('d\theta')
+ylabel('\phi')
+
+
+
+
+subplot 122
+
 hold on
 title('\theta-d\theta Phase plane ')
 plot(Event1_state(:,1),Event1_state(:,2),Event1_sym)
@@ -174,23 +220,7 @@ plot(theta,dtheta,'Color',color)
 xlabel('\theta')
 ylabel('d\theta')
 
-figure(126)
-hold on
-title('d\theta-\phi Phase plane ')
-plot(Event1_state(:,2),Event1_state(:,5),Event1_sym)
-plot(Event2_state(:,2),Event2_state(:,5),Event2_sym)
-plot(Event3_state(:,2),Event3_state(:,5),Event3_sym)
-plot(Event4_state(:,2),Event4_state(:,5),Event4_sym)
-plot(Event5_state(:,2),Event5_state(:,5),Event5_sym)
 
-if ~isempty(ind_event2)
-legend(Legend1,Legend2,Legend3,Legend4,Legend5)
-else
-    legend(Legend1,Legend3,Legend4,Legend5)
-end
-plot(dtheta,phase,'Color',color)
-xlabel('d\theta')
-ylabel('\phi')
 
 figure(127)
 hold on
@@ -221,6 +251,13 @@ plot([dtheta(1)  ; Poincare_state(:,2)],[ phase(1) ; Poincare_state(:,5)],Poinca
 drawnow
 
 disp 'avarage speed:'
-v1 = (Sim.Out.X(end,3)-Sim.Out.X(1,3))/Sim.Out.T(end)
-v2 = mean(Sim.Out.X(:,4))
+v = (Sim.Out.X(end,3)-Sim.Out.X(1,3))/Sim.Out.T(end)
+%v2 = mean(Sim.Out.X(:,4))
+
+ ind2 =  find( cell2mat(Sim.Out.EventsVec.Type)==2 ,1,'last' );
+ ind3 =  find( cell2mat(Sim.Out.EventsVec.Type)==3 ,1,'last' );
+ 
+ LC = Sim.IClimCyc
+ phi_short = Sim.Out.EventsVec.Xa{ind2}(5)
+  phi_extend = Sim.Out.EventsVec.Xa{ind3}(5)
 end

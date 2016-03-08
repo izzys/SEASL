@@ -111,7 +111,7 @@ function [ Sim ] = Init( Sim )
         Sim.FlMax = Sim.COMx0+1.5*Sim.AR*Sim.Mod.cart_length;
         Sim.HeightMin = Sim.COMy0-4/Sim.AR*Sim.Mod.cart_height;
         Sim.HeightMax = Sim.COMy0+4/Sim.AR*Sim.Mod.cart_height;
-        warning('need to have floor also when graphics off!!!')
+%        warning('need to have floor also when graphics off!!!')
         [Sim.Env,FloorX,FloorY] = Sim.Env.Init(Sim.FlMin,Sim.FlMax);
         Sim.Mod.Env_params.FloorX = FloorX;
         Sim.Mod.Env_params.FloorY = FloorY;
@@ -153,8 +153,14 @@ function [ Sim ] = Init( Sim )
     % init stats:
     Sim.ICstore = zeros(Sim.stDim, Sim.nICsStored);
     Sim.stepsSS = zeros(1,Sim.nICsStored-1);
-    
+    Sim.EventsCounter = 0;
+
     % Init Sim.End result
+    Sim.Out.X = [];
+    Sim.Out.T = [];
+    Sim.Out.Tend = Sim.tend;
+    Sim.Out.nSteps = [];
+    Sim.Out.StepsSS = [];
     Sim.Out.Hip_u = [];
     Sim.Out.Ankle_u = [];   
     Sim.Out.PoincareSection = [];
