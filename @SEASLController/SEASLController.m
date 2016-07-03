@@ -169,7 +169,7 @@ classdef SEASLController < handle & matlab.mixin.Copyable
                    
               case 'Const'
                    
-                   T = 4;%-40*X(1)-1*X(2);
+                   T = 1;%-40*X(1)-1*X(2);
                    
                        
                case 'CPG'
