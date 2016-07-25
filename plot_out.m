@@ -1,4 +1,4 @@
-% plot out:
+function []= plot_out(Sim)
 
 theta = Sim.Out.X(:,1);
 dtheta = Sim.Out.X(:,2);
@@ -16,10 +16,15 @@ zmp1 = Sim.Out.ZMPval1;
 zmp2 = Sim.Out.ZMPval2;
 zmp_time = Sim.Out.ZMPtime_stamp;
 
-
+if ~isempty(Sim.Out.EventsVec)
+    
 EventsTime = cell2mat(Sim.Out.EventsVec.Time);
 EventsX = cell2mat(Sim.Out.EventsVec.State);
 EventsX = vec2mat(EventsX,Sim.stDim);
+
+Xa = cell2mat(Sim.Out.EventsVec.Xa);
+Xa = vec2mat(Xa,Sim.stDim);
+
 
 ind_event1 = find(cell2mat(Sim.Out.EventsVec.Type)==1);
 Event1_time = EventsTime(ind_event1);
@@ -36,7 +41,7 @@ Event2_time = EventsTime(ind_event2);
 Event2_state = EventsX(ind_event2,:);
 Event2_sym = 'xr';
 if ~isempty(ind_event2)
-    Legend2 = 'Event2 - hip hits track';
+    Legend2 = 'Event2 - hip hits switch';
 else
     Legend2 = '';
 end
@@ -46,7 +51,7 @@ Event3_time = EventsTime(ind_event3);
 Event3_state = EventsX(ind_event3,:);
 Event3_sym = 'vk';
 if ~isempty(ind_event3)
-    Legend3 = 'Event3 - Extend leg (at max height)';
+    Legend3 = 'Event3 -  max height';
 else
     Legend3 = '';
 end
@@ -54,12 +59,20 @@ end
 ind_event4 = find(cell2mat(Sim.Out.EventsVec.Type)==4);
 Event4_time = EventsTime(ind_event4);
 Event4_state = EventsX(ind_event4,:);
-Event4_sym = '*k';
+Event4_sym = '*b';
 if ~isempty(ind_event4)
     Legend4 = 'Event4 - new phase';
 else
     Legend4 ='';
 end
+
+
+
+Poincare_sym = '--hk';
+Poincare_state = Xa(ind_event1,:);
+
+color = [rand(1) rand(1) rand(1)];
+
 
 figure(121)
 
@@ -77,7 +90,7 @@ legend(Legend1,Legend2,Legend3,Legend4)
 else
     legend(Legend1,Legend3,Legend4)
 end
-plot(t,theta)
+plot(t,theta,'Color',color)
 
 subplot 322
 hold on
@@ -95,7 +108,7 @@ plot(Event4_time,Event4_state(:,3),Event4_sym)
 
 subplot 323
 hold on
-plot(t,dtheta)
+plot(t,dtheta,'Color',color)
 plot(Event1_time,Event1_state(:,2),Event1_sym)
 plot(Event2_time,Event2_state(:,2),Event2_sym)
 plot(Event3_time,Event3_state(:,2),Event3_sym)
@@ -112,17 +125,19 @@ plot(t,dx)
 ylabel('x dot')
 
 subplot 325
-stairs(u_time,hip_u)
+stairs(u_time,hip_u,'Color',color)
 hold on
 plot(t,phase,'--','Color',[0.7 0.7 0.7])
 ylabel('u hip')
 xlabel('Time [sec]')
 subplot 326
 hold on
-plot(u_time,ankle_u)
+plot(u_time,ankle_u,'Color',color)
 ylabel('u ankle')
 xlabel('Time [sec]')
 plot(t,phase,'--','Color',[0.7 0.7 0.7])
+
+
 figure(122)
 hold on
 title('\theta-d\theta Phase plane ')
@@ -130,13 +145,54 @@ plot(Event1_state(:,1),Event1_state(:,2),Event1_sym)
 plot(Event2_state(:,1),Event2_state(:,2),Event2_sym)
 plot(Event3_state(:,1),Event3_state(:,2),Event3_sym)
 plot(Event4_state(:,1),Event4_state(:,2),Event4_sym)
+if ~isempty(ind_event2)
+legend(Legend1,Legend2,Legend3,Legend4)
+else
+    legend(Legend1,Legend3,Legend4)
+end
+plot(theta,dtheta,'color',color)
+xlabel('\theta')
+ylabel('d\theta')
+
+figure(126)
+hold on
+title('d\theta-\phi Phase plane ')
+plot(Event1_state(:,2),Event1_state(:,5),Event1_sym)
+plot(Event2_state(:,2),Event2_state(:,5),Event2_sym)
+plot(Event3_state(:,2),Event3_state(:,5),Event3_sym)
+plot(Event4_state(:,2),Event4_state(:,5),Event4_sym)
 
 if ~isempty(ind_event2)
 legend(Legend1,Legend2,Legend3,Legend4)
 else
     legend(Legend1,Legend3,Legend4)
 end
-color = [rand(1) rand(1) rand(1)];
-plot(theta,dtheta,'color',color)
+plot(dtheta,phase,'color',color)
+xlabel('d\theta')
+ylabel('\phi')
+
+figure(127)
+hold on
+title('\theta - d\theta-\phi Phase plane ')
+plot3(Event1_state(:,1),Event1_state(:,2),Event1_state(:,5),Event1_sym)
+plot3(Event2_state(:,1),Event2_state(:,2),Event2_state(:,5),Event2_sym)
+plot3(Event3_state(:,1),Event3_state(:,2),Event3_state(:,5),Event3_sym)
+plot3(Event4_state(:,1),Event4_state(:,2),Event4_state(:,5),Event4_sym)
+
+if ~isempty(ind_event2)
+legend(Legend1,Legend2,Legend3,Legend4)
+else
+    legend(Legend1,Legend3,Legend4)
+end
+plot3(theta,dtheta,phase,'color',color)
 xlabel('\theta')
 ylabel('d\theta')
+zlabel('\phi')
+
+figure(1)
+hold on
+
+%plot([ dtheta(1) ],[phase(1) ],Poincare_sym,'MarkerSize',10,'LineWidth',2)
+plot([dtheta(1)  ; Poincare_state(:,2)],[ phase(1) ; Poincare_state(:,5)],Poincare_sym,'MarkerSize',10,'LineWidth',2)
+drawnow
+end

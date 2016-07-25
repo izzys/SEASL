@@ -1,6 +1,6 @@
 % Render model:
 function Mod = Render(Mod,X)
-
+   
     [x_hip,y_hip] = Mod.GetPos(X,'hip');
     [x_ankle,y_ankle] = Mod.GetPos(X,'ankle');
     [x_cart,~] = Mod.GetPos(X,'cart');

@@ -1,8 +1,10 @@
 classdef Simulation < handle & matlab.mixin.Copyable
      
     properties(Constant)
-
+ 
         % End flags:
+        EndFlag_LegHitsGroundDuringExtend = -9;
+        EndFlag_MoreThanOneStance = -8;
         EndFlag_HipHitTrack = -7;
         EndFlag_NoSignChange = -6;
         EndFlag_MaxLegAngle = -5;
@@ -14,14 +16,14 @@ classdef Simulation < handle & matlab.mixin.Copyable
         EndFlag_DoneNumberOfSteps = 1;
         EndFlag_Converged = 2;
         EndFlag_TimeEndedBeforeConverge = 3;
-
+ 
     end
     
     properties
         Mod; % Model
         Con; % Controller
         Env; % Environment
-
+ 
         % State params
         stDim; ModCo; ConCo;
         % Event params
@@ -44,21 +46,27 @@ classdef Simulation < handle & matlab.mixin.Copyable
         
         StepsTaken;
         EventsCounter = 0; 
-        ICstore; nICsStored = 10;
-        minDiff = 1e-9; % Min. difference for LC convergence
-        stepsReq = 10; % Steps of minDiff required for convergence
+        ICstore; nICsStored = 5;
+        minDiff = 1e-8; % Min. difference for LC convergence
+ 
+        stepsReq = 5; % Steps of minDiff required for convergence
+
         stepsSS; % Steps taken since minDiff
+        
+        
+        %check 1 stance phase for each period:
+        stance_counter=0;
         
         % Poincare map calculation parameters
         IClimCyc; Period;
-        PMeps = 1e-7; PMFull = 1;
+        PMeps = 5e-7; PMFull = 1;
         PMeigs; PMeigVs;
         % Check convergence progression
         doGoNoGo = 1; % 0 - OFF, 1 - Extend, 2 - Cut
         GNGThresh = [4,4]; % required steps for go/no-go order
         minMaxDiff = [1,0];
         ConvProgr = [0,0];
-        indICtoCheck  = [1 2 4];    
+        indICtoCheck  = [1 2 5];    
         % Rendering params
         Graphics = 1;
         Fig = 0; Once = 1; StopSim;PauseSim;
@@ -74,19 +82,21 @@ classdef Simulation < handle & matlab.mixin.Copyable
         hTime; TimeStr = ['t = %.2f s\nSteps: %s '];
         % Convergence display
         hConv; ConvStr = 'Diff = %.2e\nPeriod = %s';
-
+ 
         Colors = {[1 0 0],[0 0 1],[0 1 0],[0 0 0]};
         
         VideoWriterObj;
+        
+        DebugMode = 0;
     end
     
     methods
         % Class constructor:
         function Sim = Simulation(varargin)
-
+ 
                     Sim.Mod = SEASL();
                     Sim.Con = SEASLController();
-                    Sim.Env = Terrain();
+                    Sim.Env = Terrain(4); % Type 4 terrain - disturbances
            
         end
         
@@ -152,27 +162,36 @@ classdef Simulation < handle & matlab.mixin.Copyable
             Xt = [Sim.Mod.Derivative(t,X(Sim.ModCo));
                   Sim.Con.Derivative(t,X(Sim.ConCo))];
         end
-
+ 
         function [value, isterminal, direction] = Events(Sim, t, X) 
+            
+             [xdim,ydim] = size(X);
+             if xdim>ydim
+                 X = X';
+             end
             
             value = zeros(Sim.nEvents,1);
             isterminal = ones(Sim.nEvents,1);
             direction = zeros(Sim.nEvents,1);
-
+ 
             % Call model event function
             [value(Sim.ModEv), isterminal(Sim.ModEv), direction(Sim.ModEv)] = ...
-                Sim.Mod.Events(t,X(Sim.ModCo), Sim.Env);
+                Sim.Mod.Events(t,X(Sim.ModCo));
             
             % Call controller event function
             [value(Sim.ConEv), isterminal(Sim.ConEv), direction(Sim.ConEv)] = ...
                 Sim.Con.Events(t,X(Sim.ConCo));
             
-
+ 
         end
         
         function [status] = Output_function(Sim,t,X,flag) 
             
-           
+             [xdim,ydim] = size(X);
+             if xdim>ydim
+                 X = X';
+             end
+             
            %Get control vlaue:
            switch flag
                
@@ -186,14 +205,14 @@ classdef Simulation < handle & matlab.mixin.Copyable
                   Sim.Out.Hip_u = [Sim.Out.Hip_u ; Sim.Mod.Hip_Torque];
                   Sim.Out.Ankle_u = [Sim.Out.Ankle_u ; Sim.Mod.Ankle_Torque];                  
                   Sim.Out.Control_time  = [Sim.Out.Control_time  t(1)];
-
+ 
                case 'done'
-
+ 
                    return;
                             
                otherwise
                    
-
+ 
                   % Check for errors and consflicts (for debugging):
                   Sim.CheckForErrors(t,X);
                   
@@ -211,11 +230,12 @@ classdef Simulation < handle & matlab.mixin.Copyable
            if Sim.Graphics == 1
              Sim.Render(t,X,flag);
            end
+           warning('need to have floor also when graphics off!!!')
            
            status = Sim.StopSim; 
             
         end
-
+ 
         function StopButtonCB(Sim, hObject, eventdata, handles) %#ok<INUSD>
             if Sim.StopSim == 0
                 Sim.StopSim = 1;
@@ -228,12 +248,12 @@ classdef Simulation < handle & matlab.mixin.Copyable
         end  
         
        function PauseButtonCB(Sim, hObject, eventdata, handles) %#ok<INUSD>
-
+ 
             if Sim.StopSim == 0 && Sim.PauseSim == 0
                 
                 Sim.PauseSim = 1; 
                 set(hObject,'String','Resume');
-
+ 
                 while Sim.PauseSim
                     %do nothing
                     pause(0.1)
@@ -243,7 +263,7 @@ classdef Simulation < handle & matlab.mixin.Copyable
                 Sim.PauseSim = 0;
                 set(hObject,'String','Pause');
             end
-
+ 
        end
         
        function DeleteFcnCB(Sim,hObject, eventdata, handles)%#ok<INUSD>
@@ -268,22 +288,42 @@ classdef Simulation < handle & matlab.mixin.Copyable
             if isempty(ext_out) || length(ext_out.T)<1
                 out.X = out.X(1:last_i,:);
                 out.T = out.T(1:last_i,:);
-
+ 
             else
                 out.X = [ext_out.X;out.X(1:last_i,:)];
                 out.T = [ext_out.T;ext_out.T(end)+out.T(1:last_i,:)];
-
+ 
             end
         end
         
-        function [] = RecordEvents(Sim,TE,YE,IE)
+        function [] = RecordEvents(Sim,TE,YE,IE,Xa)
             
-           Sim.EventsCounter = Sim.EventsCounter+1;
+           if ~isempty(IE)
+            
+               Sim.EventsCounter = Sim.EventsCounter+1;
+ 
+                   if sum(isnan(YE(end,:))) 
+                       [  x , ~ ] = Sim.Mod.GetPos( YE(end,:), 'cart');
+                       [ dx , ~ ] = Sim.Mod.GetVel( YE(end,:), 'cart');
+                       YE(end,3) = x;
+                       YE(end,4) = dx;
+                   end
+                   
+                   
+                   if sum(isnan(Xa)) 
+                       [x_a , ~] = Sim.Mod.GetPos(Xa(end,:),'cart'); 
+                       [dx_a , ~] = Sim.Mod.GetVel(Xa(end,:),'cart');  
+                       Xa(3) = x_a;
+                       Xa(4) = dx_a;
+                   end
+                   
 
-           Sim.Out.EventsVec.Type{Sim.EventsCounter} = IE(end);
-           Sim.Out.EventsVec.Time{Sim.EventsCounter} = TE(end);
-           Sim.Out.EventsVec.State{Sim.EventsCounter} = YE(end,:);
-
+               Sim.Out.EventsVec.Type{Sim.EventsCounter} = IE(end);
+               Sim.Out.EventsVec.Time{Sim.EventsCounter} = TE(end);
+               Sim.Out.EventsVec.State{Sim.EventsCounter} = YE(end,:);
+               Sim.Out.EventsVec.Xa{Sim.EventsCounter} = Xa(end,:);
+           end
+ 
         end
         
         function [] = CheckForErrors(Sim,t,X)
@@ -294,30 +334,34 @@ classdef Simulation < handle & matlab.mixin.Copyable
              end 
              
             % make sure hip in track:
-            [ ~, y_hip ] = GetPos(Sim.Mod, X, 'hip');
+            [ ~, y_hip ] = GetPos(Sim.Mod, X(end,:), 'hip');
            
-            if (y_hip+1e-6)<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
+            if (y_hip+1e-8)<(2*Sim.Mod.cart_wheel_radius + Sim.Mod.cart_height - Sim.Mod.cart_width/2)
                % warning('Warning:  hip too low')
                  Sim.Out.Type = Sim.EndFlag_HipHitTrack;
-                 Sim.Out.Text = 'Hip hit track';
+                 Sim.Out.Text = 'Hip hit track.';
+              %   error('Error: Hip hit track');
                  Sim.StopSim = 1;
             end
             
              % make sure leg does not penetrate ground:
-            [ ~, y_ankle ] = GetPos(Sim.Mod, X, 'ankle');
-            if (y_ankle+1e-8)<Sim.Mod.ankle_radius
-                warning('Warning:  foot penetrates ground')
-                
-            end 
 
+            [ x_ankle, y_ankle ] = GetPos(Sim.Mod, X(end,:), 'ankle');
+
+            ind = find(x_ankle<=Sim.Mod.Env_params.FloorX,1,'first');
+            FloorY = Sim.Mod.Env_params.FloorY( ind );
+            if (y_ankle+1e-8)<(Sim.Mod.ankle_radius+FloorY)     
+               error('Error: Foot penetrates ground')           
+            end 
+ 
              % make sure ZMP is within support polygon:
              if  strcmp(Sim.Mod.Phase,'stance')
                   [zmp1,zmp2] = Sim.Mod.CalcZMP( X );
 %                   if abs(zmp)>Sim.Mod.foot_length/2 
 %                   warning('Warning: ZMP out of support polygon')
 %                   end
-
-
+ 
+ 
                  Sim.Out.ZMPtime_stamp = [Sim.Out.ZMPtime_stamp t(end)];
                  Sim.Out.ZMPval1 = [Sim.Out.ZMPval1  zmp1];
                  Sim.Out.ZMPval2 = [Sim.Out.ZMPval2  zmp2];
@@ -339,5 +383,6 @@ classdef Simulation < handle & matlab.mixin.Copyable
         
     end
 end
-
+ 
+ 
 
