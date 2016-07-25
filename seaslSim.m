@@ -17,7 +17,6 @@ Sim.Env.end_x = 4;
 % Set up the model:
 Sim.Mod = Sim.Mod.Set('Phase','stance','LinearMotor','out');
 
-
 % Init controller:                                                                    short             extend
 %Sim.Con = Sim.Con.Set('Period',1.2,'phi_tau',[0.1 0.25 0.4 0.99],'tau',[2 -3],...
                    %    'phi_reflex',[ 0.897308852443590  0.558365283467955 ]); %0.897308852443590   0.558365283467955
@@ -25,7 +24,6 @@ Sim.Mod = Sim.Mod.Set('Phase','stance','LinearMotor','out');
  Sim.Con = Sim.Con.Set('Period',1.2,'phi_tau',[0.05 0.45 0.55 0.9],'tau',[7 -10]*k_sea,...
                        'phi_reflex',[ NaN  NaN ]); %0.897308852443590   0.558365283467955
 Sim.Con.Controller_Type = 'CPG';
-
 
 Sim.IClimCyc = [ 0.359391210427835  -3.525464278622958  0   2.970203654740103   0.710126001714929] ;
 
