@@ -4,7 +4,7 @@ function [ Sim ] = Run( Sim )
     X = [];
     Sim.Out.T = [];
     
-    options=odeset('MaxStep',Sim.tstep/10,'RelTol',.5e-12,'AbsTol',.5e-11,...
+    options=odeset('MaxStep',Sim.tstep/10,'RelTol',.5e-7,'AbsTol',.5e-6,...
             'OutputFcn', @Sim.Output_function, 'Events', @Sim.Events);
 
     tspan = Sim.tstart:Sim.tstep:Sim.tend;

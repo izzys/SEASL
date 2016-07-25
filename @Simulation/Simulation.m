@@ -355,17 +355,17 @@ classdef Simulation < handle & matlab.mixin.Copyable
             end 
  
              % make sure ZMP is within support polygon:
-             if  strcmp(Sim.Mod.Phase,'stance')
-                  [zmp1,zmp2] = Sim.Mod.CalcZMP( X );
+          %   if  strcmp(Sim.Mod.Phase,'stance')
+        %          [zmp1,zmp2] = Sim.Mod.CalcZMP( X );
 %                   if abs(zmp)>Sim.Mod.foot_length/2 
 %                   warning('Warning: ZMP out of support polygon')
 %                   end
  
  
-                 Sim.Out.ZMPtime_stamp = [Sim.Out.ZMPtime_stamp t(end)];
-                 Sim.Out.ZMPval1 = [Sim.Out.ZMPval1  zmp1];
-                 Sim.Out.ZMPval2 = [Sim.Out.ZMPval2  zmp2];
-             end
+        %         Sim.Out.ZMPtime_stamp = [Sim.Out.ZMPtime_stamp t(end)];
+       %          Sim.Out.ZMPval1 = [Sim.Out.ZMPval1  zmp1];
+      %           Sim.Out.ZMPval2 = [Sim.Out.ZMPval2  zmp2];
+    %         end
              
              
              

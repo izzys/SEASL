@@ -12,9 +12,6 @@ u_time = Sim.Out.Control_time;
 
 phase = Sim.Out.X(:,5);
 
-zmp1 = Sim.Out.ZMPval1;
-zmp2 = Sim.Out.ZMPval2;
-zmp_time = Sim.Out.ZMPtime_stamp;
 
 if ~isempty(Sim.Out.EventsVec)
     
@@ -95,12 +92,8 @@ plot(t,theta,'Color',color)
 subplot 322
 hold on
 plot(t,x)
-ylabel('x , zmp')
-plot(zmp_time,zmp1,'.m')
-plot(zmp_time,zmp2,'.c')
-plot(zmp_time,ones(1,length(zmp_time))*Sim.Mod.foot_length/2 ,'xr')
-legend('x','zmp1','zmp2','foot length')
-plot(zmp_time,-ones(1,length(zmp_time))*Sim.Mod.foot_length/2 ,'xr')
+ylabel('x')
+legend('x')
 plot(Event1_time,Event1_state(:,3),Event1_sym)
 plot(Event2_time,Event2_state(:,3),Event2_sym)
 plot(Event3_time,Event3_state(:,3),Event3_sym)
@@ -124,12 +117,14 @@ plot(Event4_time,Event4_state(:,4),Event4_sym)
 plot(t,dx)
 ylabel('x dot')
 
-subplot 325
-stairs(u_time,hip_u,'Color',color)
+
+subplot(3,2,5)
+plot(u_time,hip_u,'Color',color)
 hold on
 plot(t,phase,'--','Color',[0.7 0.7 0.7])
 ylabel('u hip')
 xlabel('Time [sec]')
+
 subplot 326
 hold on
 plot(u_time,ankle_u,'Color',color)

@@ -142,9 +142,9 @@ function [ Sim ] = Init( Sim )
     Sim.Out.Control_time = [];
     Sim.Out.Type = Sim.EndFlag_EndOfTime;
     Sim.Out.Text = 'Reached end of tspan';
-    Sim.Out.ZMPtime_stamp = [];
-    Sim.Out.ZMPval1 = [];
-    Sim.Out.ZMPval2 = [];
+  %  Sim.Out.ZMPtime_stamp = [];
+  %  Sim.Out.ZMPval1 = [];
+  %  Sim.Out.ZMPval2 = [];
     Sim.Out.EventsVec = [];
 end
 

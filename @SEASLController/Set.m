@@ -22,6 +22,8 @@ else
                 Con.phi_tau = value; 
             case 'phi_reflex'
                 Con.phi_reflex = value; 
+            case 'TC'
+                Con.TC = value;
 
             otherwise
                 error(['Set failed: ',key,' property not found']);

@@ -39,6 +39,9 @@ classdef SEASLController < handle & matlab.mixin.Copyable
         phi_reflex;
         phi;
         
+        % logistic function time constant:
+        TC = 100;
+        
     end
     
     methods
@@ -57,16 +60,16 @@ classdef SEASLController < handle & matlab.mixin.Copyable
 
                 NC.omega0 = 1/NC.Period;
                 NC.phi = [NC.phi_tau,  NC.phi_reflex ] ;
-                NC.nEvents = 1+length(NC.phi);
+                NC.nEvents = 1+length(NC.phi_reflex);
                 
                 %set initial tourque:
                 NC.u = 0;
-                if NC.IC>NC.phi_tau(1) && NC.IC<NC.phi_tau(2)
-                    NC.u = NC.tau(1);
-                end
-                if NC.IC>NC.phi_tau(3) && NC.IC<NC.phi_tau(4)
-                    NC.u = NC.tau(2);
-                end
+%                 if NC.IC>NC.phi_tau(1) && NC.IC<NC.phi_tau(2)
+%                     NC.u = NC.tau(1);
+%                 end
+%                 if NC.IC>NC.phi_tau(3) && NC.IC<NC.phi_tau(4)
+%                     NC.u = NC.tau(2);
+%                 end
                
               otherwise
                   
@@ -111,11 +114,11 @@ classdef SEASLController < handle & matlab.mixin.Copyable
                    
 
                    % Event i: end of phase
-                   for i = 2:NC.nEvents
-                       value(i) = NC.phi(i-1)-phase;
-                       isterminal(i) = 1;
-                       direction(i) = -1;
-                   end
+%                    for i = 2:NC.nEvents
+%                        value(i) = NC.phi(i-1)-phase;
+%                        isterminal(i) = 1;
+%                        direction(i) = -1;
+%                    end
 
                otherwise
                   
@@ -142,28 +145,28 @@ classdef SEASLController < handle & matlab.mixin.Copyable
 
                     NC.u = 0;
              
-                case 2  %phi1
+%                 case 2  %phi1
+%                     
+%                    NC.u = NC.tau(1); 
+%                     
+%                 case 3 %phi2
+%                     
+%                     NC.u = 0;
+%               
+%                 case 4 %phi3
+%                     
+%                    NC.u = NC.tau(2);  
+%                    
+%                 case 5  %phi4
+%                     
+%                     NC.u = 0;
                     
-                   NC.u = NC.tau(1); 
                     
-                case 3 %phi2
-                    
-                    NC.u = 0;
-              
-                case 4 %phi3
-                    
-                   NC.u = NC.tau(2);  
-                   
-                case 5  %phi4
-                    
-                    NC.u = 0;
-                    
-                    
-                case 6  % short
+                case 2  % short
                     
                     NC.Linear_motor_in = 1;
                     
-                case 7  % extend
+                case 3  % extend
                     
                     NC.Linear_motor_out = 1;
             end
@@ -204,7 +207,10 @@ classdef SEASLController < handle & matlab.mixin.Copyable
                case 'CPG'
  
                     
-                    T =  NC.u;
+                    T =  NC.tau(1)*NC.logisticFcn(X(end)-NC.phi_tau(1)) ...
+                       - NC.tau(1)*NC.logisticFcn(X(end)-NC.phi_tau(2)) ...
+                       + NC.tau(2)*NC.logisticFcn(X(end)-NC.phi_tau(3)) ...
+                       - NC.tau(2)*NC.logisticFcn(X(end)-NC.phi_tau(4));
 
     
                otherwise
@@ -233,10 +239,14 @@ classdef SEASLController < handle & matlab.mixin.Copyable
            end
            
        end
-        
+       
+       function [ h ] = logisticFcn( NC, x )
 
+
+                h = 1./(1+exp(-NC.TC*x));
+
+       end
+    
     end
-    
-    
 
 end

@@ -19,10 +19,11 @@ Sim.Mod = Sim.Mod.Set('Phase','stance','LinearMotor','out');
 
 
 % Init controller:                                                                    short             extend
-Sim.Con = Sim.Con.Set('Period',1.2,'phi_tau',[0.1 0.25 0.4 0.99],'tau',[2 -3],...
-                       'phi_reflex',[ 0.897308852443590  0.558365283467955 ]); %0.897308852443590   0.558365283467955
-% Sim.Con = Sim.Con.Set('Period',1.2,'phi_tau',[0.1 0.25 0.4 0.99],'tau',[2 -3],...
-%                        'phi_reflex',[ NaN  NaN ]); %0.897308852443590   0.558365283467955
+%Sim.Con = Sim.Con.Set('Period',1.2,'phi_tau',[0.1 0.25 0.4 0.99],'tau',[2 -3],...
+                   %    'phi_reflex',[ 0.897308852443590  0.558365283467955 ]); %0.897308852443590   0.558365283467955
+ k_sea = 17.337556665*1000*2*(15e-3)^2*pi/180;                  
+ Sim.Con = Sim.Con.Set('Period',1.2,'phi_tau',[0.05 0.45 0.55 0.9],'tau',[7 -10]*k_sea,...
+                       'phi_reflex',[ NaN  NaN ]); %0.897308852443590   0.558365283467955
 Sim.Con.Controller_Type = 'CPG';
 
 
