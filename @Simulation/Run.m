@@ -1,8 +1,11 @@
 function [ Sim ] = Run( Sim )
 % Run the simulation until an event occurs
 % Handle the event and keep running
-    X = [];
+    Sim.Out.X = [];
     Sim.Out.T = [];
+    Sim.Out.J = 0;
+    Sim.Out.dTheta(Sim.StepsTaken+1,:) = Sim.Con.ApplyVar();
+    Sim.Out.PoincareSection(:,Sim.StepsTaken+1) = Sim.IC;
     
     options=odeset('MaxStep',Sim.tstep/10,'RelTol',.5e-7,'AbsTol',.5e-6,...
             'OutputFcn', @Sim.Output_function, 'Events', @Sim.Events);
@@ -25,28 +28,32 @@ function [ Sim ] = Run( Sim )
         [XTemp(:,3) , ~] = Sim.Mod.GetPos(XTemp,'cart'); 
         [XTemp(:,4) , ~] = Sim.Mod.GetVel(XTemp,'cart');  
     end
-    X = [X; XTemp];
+    Sim.Out.X = [Sim.Out.X; XTemp];
     Sim.Out.T = [Sim.Out.T; TTemp];
     
     while TimeCond && Sim.StopSim == 0
         
-% ~~ %%%%%%%%% for debugging %%%%%%%%%%  ~~   
-if Sim.DebugMode
-disp('=====================')
-Sim.Mod.Phase
-TE
-YE
-IE
-
-disp('=====================')
-pause
-end
-% ~~ %%%%%%%%% for debugging %%%%%%%%%%  ~~   
+                % ~~ %%%%%%%%% for debugging %%%%%%%%%%  ~~   
+                if Sim.DebugMode
+                disp('=====================')
+                Sim.Mod.Phase
+                TE
+                YE
+                IE
+                disp('=====================')
+                pause
+                end
+                % ~~ %%%%%%%%% for debugging %%%%%%%%%%  ~~   
 
 
         StepDone = 0;
         Xa = XTemp(end,:);
         for ev = 1:length(IE)
+            
+            
+            if IE(ev)==Sim.PoincareEventInd
+                StepDone = 1;
+            end
             
             % Is it a model event?
             ModEvID = find(IE(ev) == Sim.ModEv,1,'first');
@@ -65,7 +72,6 @@ end
                     case 1 %check only 1 stance phase for each period
                         Sim.stance_counter = Sim.stance_counter+1;
 
-                         StepDone = 1;
 %                         if Sim.stance_counter>1
 %                             Sim.Out.Type = Sim.EndFlag_MoreThanOneStance;
 %                             Sim.Out.Text = 'More than 1 stance phase for period';
@@ -75,11 +81,13 @@ end
                     case 2  %check that leg hits track only if theta>0 
 
                         if Xa(1)>0
+                            
                             Sim.Out.Type = Sim.EndFlag_NoSignChange;
                             Sim.Out.Text = 'Leg hits track when theta>0';
                             Sim.StopSim = 1;
 
-
+                            Sim.Out.Reward(Sim.StepsTaken+1) = Sim.GetReward();
+                            Sim.Out.J = Sim.Out.J + Sim.gamma^(Sim.StepsTaken)*Sim.Out.Reward(Sim.StepsTaken+1);
                         end
 
                     case 3 % check that foot does not extend into ground
@@ -92,6 +100,10 @@ end
                             Sim.Out.Type = Sim.EndFlag_LegHitsGroundDuringExtend;
                             Sim.Out.Text =' foot penetrates ground during extend';
                             Sim.StopSim = 1;
+                            
+                            
+                            Sim.Out.Reward(Sim.StepsTaken+1) = Sim.GetReward();
+                            Sim.Out.J = Sim.Out.J + Sim.gamma^(Sim.StepsTaken)*Sim.Out.Reward(Sim.StepsTaken+1);
 
                         end
                 end
@@ -170,9 +182,19 @@ end
             Sim.StepsTaken = Sim.StepsTaken+1;
 
             Sim = Sim.CheckConvergence();
-            Sim.Out.PoincareSection(:,Sim.StepsTaken) = Sim.IC;
+            Sim.Out.PoincareSection(:,Sim.StepsTaken+1) = Sim.IC;
 
+            Sim.Out.dTheta(Sim.StepsTaken+1,:) = Sim.Con.ApplyVar();
+            
             Sim.stance_counter = 0;
+            
+            % compute avagage velocity:
+            Sim.Out.AvgVel(Sim.StepsTaken) = Sim.GetAvgVel();
+            
+            % stuff for RL:
+            Sim.Out.Reward(Sim.StepsTaken) = Sim.GetReward();
+            Sim.Out.J = Sim.Out.J + Sim.gamma^(Sim.StepsTaken-1)*Sim.Out.Reward(Sim.StepsTaken);
+            
         end
         
         
@@ -211,7 +233,7 @@ end
              [XTemp(:,4) , ~] = Sim.Mod.GetVel(XTemp,'cart');  
         end
 
-        X = [X; XTemp];%#ok<AGROW>
+        Sim.Out.X = [Sim.Out.X; XTemp];
         Sim.Out.T = [Sim.Out.T; TTemp];
         
     end
@@ -227,20 +249,26 @@ end
     end
     
     
-    % Prepare simulation output
+    % Prepare simulation output and do some stuff before exiting simulation:
 
-    Sim.Out.X = X;
     if ~isempty(Sim.Period)
         Sim.Out.Tend = Sim.Out.T(end);
     else
         Sim.Out.Tend = Sim.tend;
     end
-
+    
+    if Sim.gamma ==1
+    Sim.Out.J = Sim.Out.J/(Sim.StepsTaken+1);
+    end
+        
     Sim.Out.nSteps = Sim.StepsTaken;
     Sim.Out.StepsSS = Sim.stepsSS;
     
-    disp(Sim.Out.Text)
-
-
+    disp([Sim.Out.Text ' after '  num2str(Sim.Out.nSteps) ' steps. J = ' num2str(Sim.Out.J)])
+    
+    if Sim.Video
+    close(Sim.VideoWriterObj);
+    end
+    
 end
 

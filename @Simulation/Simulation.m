@@ -61,6 +61,8 @@ classdef Simulation < handle & matlab.mixin.Copyable
         IClimCyc; Period;
         PMeps = 5e-7; PMFull = 1;
         PMeigs; PMeigVs;
+        PoincareEventInd = 4;
+        
         % Check convergence progression
         doGoNoGo = 1; % 0 - OFF, 1 - Extend, 2 - Cut
         GNGThresh = [4,4]; % required steps for go/no-go order
@@ -68,9 +70,9 @@ classdef Simulation < handle & matlab.mixin.Copyable
         ConvProgr = [0,0];
         indICtoCheck  = [1 2 5];    
         % Rendering params
-        Graphics = 1;
+        Graphics = 1; Video =0;
         Fig = 0; Once = 1; StopSim;PauseSim;
-        FigWidth; FigHeight; AR;
+        FigWidth; FigHeight; AR=2;
         StopButtonObj;PauseButtonObj;
         
         % Environment display
@@ -79,25 +81,52 @@ classdef Simulation < handle & matlab.mixin.Copyable
         % COM transformation
         tCOM; COMx0; COMy0;
         % Time display
-        hTime; TimeStr = ['t = %.2f s\nSteps: %s '];
+        hTime; TimeStr = 't = %.2f s\nSteps: %s ';
         % Convergence display
         hConv; ConvStr = 'Diff = %.2e\nPeriod = %s';
- 
+        % Velocity display
+        hVel; hVelStr = 'Velocity = %s m/s';
+        
         Colors = {[1 0 0],[0 0 1],[0 1 0],[0 0 0]};
         
         VideoWriterObj;
         
         DebugMode = 0;
+        
+        %RL stuff;
+        gamma = 1;
+        desired_speed = 1;
+        
     end
     
     methods
         % Class constructor:
         function Sim = Simulation(varargin)
- 
-                    Sim.Mod = SEASL();
-                    Sim.Con = SEASLController();
-                    Sim.Env = Terrain(4); % Type 4 terrain - disturbances
-           
+            
+            if nargin == 0
+                
+                Sim.Mod = cartSEASL();
+                Sim.Env = cartTerrain(4);
+                
+            elseif nargin==1
+                
+                switch varargin{1}
+
+                    case 'cart'
+                        Sim.Mod = cartSEASL();
+                        Sim.Env = cartTerrain(4);
+                    case 'treadmill'
+                        Sim.Mod = treadmillSEASL();
+                        Sim.Env = treadmillTerrain(4);
+                    otherwise
+                       error('Model name is wrong. Type ''cart'' or ''treadmill'' ') 
+                end
+            
+            end
+            
+            Sim.Con = SEASLController();
+             % Type 4 terrain - disturbances 
+            
         end
         
         % Make a deep copy of a handle object.
@@ -229,8 +258,10 @@ classdef Simulation < handle & matlab.mixin.Copyable
            
            if Sim.Graphics == 1
              Sim.Render(t,X,flag);
+           else
+             Sim.NoRender(t,X,flag);  
            end
-           warning('need to have floor also when graphics off!!!')
+
            
            status = Sim.StopSim; 
             
@@ -342,6 +373,8 @@ classdef Simulation < handle & matlab.mixin.Copyable
                  Sim.Out.Text = 'Hip hit track.';
               %   error('Error: Hip hit track');
                  Sim.StopSim = 1;
+                 Sim.Out.Reward(Sim.StepsTaken+1) = Sim.GetReward();
+                 Sim.Out.J = Sim.Out.J + Sim.gamma^(Sim.StepsTaken)*Sim.Out.Reward(Sim.StepsTaken+1);
             end
             
              % make sure leg does not penetrate ground:
@@ -375,6 +408,8 @@ classdef Simulation < handle & matlab.mixin.Copyable
                  Sim.Out.Type = Sim.EndFlag_MaxLegAngle;
                  Sim.Out.Text = 'Leg reached max angle';
                  Sim.StopSim = 1;
+                 Sim.Out.Reward(Sim.StepsTaken+1) = Sim.GetReward();
+                 Sim.Out.J = Sim.Out.J + Sim.gamma^(Sim.StepsTaken)*Sim.Out.Reward(Sim.StepsTaken+1);
              end
              
              

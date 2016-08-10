@@ -24,6 +24,13 @@ else
                 Con.phi_reflex = value; 
             case 'TC'
                 Con.TC = value;
+            case 'Period_var'
+                Con.Period_var = value;
+            case 'phi_var'
+                Con.phi_var = value;                
+            case 'tau_var'
+                Con.tau_var = value;                
+                
 
             otherwise
                 error(['Set failed: ',key,' property not found']);

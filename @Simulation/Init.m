@@ -113,9 +113,12 @@ function [ Sim ] = Init( Sim )
         Sim.Mod.Env_params.FloorX = FloorX;
         Sim.Mod.Env_params.FloorY = FloorY;
 
+    else
+        Sim.Mod.Env_params.FloorX = 0;
+        Sim.Mod.Env_params.FloorY = 0; 
     end
      
-    Sim.Mod.Hip_Torque = Sim.Con.u;
+    Sim.Mod.Hip_Torque = 0;
     Sim.Mod.Ankle_Torque = 0; 
     
     % if shorten is by reflex - then dont short at end of period:
@@ -142,9 +145,9 @@ function [ Sim ] = Init( Sim )
     Sim.Out.Control_time = [];
     Sim.Out.Type = Sim.EndFlag_EndOfTime;
     Sim.Out.Text = 'Reached end of tspan';
-  %  Sim.Out.ZMPtime_stamp = [];
-  %  Sim.Out.ZMPval1 = [];
-  %  Sim.Out.ZMPval2 = [];
+    Sim.Out.AvgVel = [];
     Sim.Out.EventsVec = [];
+    Sim.EventsCounter = 0;
+
 end
 
